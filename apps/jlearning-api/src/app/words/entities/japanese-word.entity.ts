@@ -30,21 +30,21 @@ export class JapaneseWord {
   @Column({ type: 'text', nullable: false })
   pronunciation: string; // Romaji
 
-  @Column({
-    type: 'enum',
-    enum: WordType,
-    nullable: false,
-  })
+  @Column({ type: 'simple-enum', enum: WordType, nullable: false })
   type: WordType; // Noun, Verb, etc.
 
   @Column({ type: 'text', nullable: true })
   notes: string | null; // Usage, nuance
 
-  @Column({ type: 'enum', enum: StudyStatus, default: StudyStatus.NOT_LEARNED })
+  @Column({
+    type: 'simple-enum',
+    enum: StudyStatus,
+    default: StudyStatus.NOT_LEARNED,
+  })
   status: StudyStatus; // Learning status
 
   @Column({
-    type: 'enum',
+    type: 'simple-enum',
     enum: DifficultyLevel,
     default: DifficultyLevel.BEGINNER,
   })

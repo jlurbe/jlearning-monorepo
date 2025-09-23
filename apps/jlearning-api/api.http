@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3333
+@baseUrl = http://localhost:3000/api
 @wordId = 1
 
 ### Create a new Japanese word with example sentences
