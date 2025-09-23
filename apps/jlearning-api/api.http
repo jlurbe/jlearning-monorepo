@@ -1,0 +1,43 @@
+@baseUrl = http://localhost:3333
+@wordId = 1
+
+### Create a new Japanese word with example sentences
+POST {{baseUrl}}/words
+Content-Type: application/json
+
+{
+  "word": "日本語",
+  "reading": "にほんご",
+  "translation": "Japanese language",
+  "pronunciation": "nihongo",
+  "type": "noun",
+  "notes": "The language spoken in Japan.",
+  "status": "in_progress",
+  "difficulty": "beginner",
+  "exampleSentences": [
+    {
+      "sentenceJp": "日本語を勉強しています。",
+      "sentenceReading": "にほんごをべんきょうしています。",
+      "sentenceEn": "I am studying Japanese."
+    }
+  ]
+}
+
+### Get all Japanese words
+GET {{baseUrl}}/words
+
+### Get a single Japanese word by ID
+# @prompt wordId
+GET {{baseUrl}}/words/{{wordId}}
+
+### Update a Japanese word
+PATCH {{baseUrl}}/words/{{wordId}}
+Content-Type: application/json
+
+{
+  "status": "learned",
+  "notes": "This word is now learned. Review occasionally."
+}
+
+### Delete a Japanese word
+DELETE {{baseUrl}}/words/{{wordId}}
