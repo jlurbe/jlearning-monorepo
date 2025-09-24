@@ -7,7 +7,7 @@ import {
   StudyStatus,
   DifficultyLevel,
   WordType,
-} from '../../enums/vocabulary.enums';
+} from '@jlearning-monorepo/api-common/shared/vocabulary';
 
 @Injectable()
 export class JapaneseWordService {

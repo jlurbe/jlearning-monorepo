@@ -1,112 +1,103 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import type { VocabularyEntry, VocabularyStats } from '../types/vocabulary';
-
-const STORAGE_KEY = 'japanese-vocabulary';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  type VocabularyEntry,
+  StudyStatus,
+  WordType,
+} from '@jlearning-monorepo/api-common/shared/vocabulary';
+import * as api from '../services/api';
 
 export function useVocabulary() {
   const [entries, setEntries] = useState<VocabularyEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load entries from localStorage on mount
-  useEffect(() => {
+  const fetchWords = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Convert date strings back to Date objects
-        const entriesWithDates = parsed.map((entry: any) => ({
-          ...entry,
-          createdAt: new Date(entry.createdAt),
-          updatedAt: new Date(entry.updatedAt),
-        }));
-        setEntries(entriesWithDates);
-      }
-    } catch (error) {
-      console.error('Failed to load vocabulary entries:', error);
+      setLoading(true);
+      const words = await api.getWords();
+      setEntries(words);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch vocabulary. Please ensure the API is running.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Save entries to localStorage whenever entries change
   useEffect(() => {
-    if (!loading) {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-      } catch (error) {
-        console.error('Failed to save vocabulary entries:', error);
-      }
-    }
-  }, [entries, loading]);
+    fetchWords();
+  }, [fetchWords]);
 
-  const addEntry = (
-    entry: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>
+  const addEntry = async (
+    newEntry: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>
   ) => {
-    const newEntry: VocabularyEntry = {
-      ...entry,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setEntries((prev) => [...prev, newEntry]);
-    return newEntry;
+    try {
+      const addedEntry = await api.addWord(newEntry);
+      setEntries((prev) => [...prev, addedEntry]);
+    } catch (err) {
+      console.error('Failed to add word:', err);
+      // Optionally, set an error state to show in the UI
+    }
   };
 
-  const updateEntry = (id: string, updates: Partial<VocabularyEntry>) => {
-    setEntries((prev) =>
-      prev.map((entry) =>
-        entry.id === id
-          ? { ...entry, ...updates, updatedAt: new Date() }
-          : entry
-      )
+  const updateEntry = async (id: string, updates: Partial<VocabularyEntry>) => {
+    try {
+      const updatedEntry = await api.updateWord(id, updates);
+      setEntries((prev) => prev.map((e) => (e.id === id ? updatedEntry : e)));
+    } catch (err) {
+      console.error('Failed to update word:', err);
+    }
+  };
+
+  const deleteEntry = async (id: string) => {
+    try {
+      await api.deleteWord(id);
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      console.error('Failed to delete word:', err);
+    }
+  };
+
+  const getStats = useCallback(() => {
+    return entries.reduce(
+      (acc, entry) => {
+        acc.total++;
+        if (entry.status) {
+          acc.byStatus[entry.status]++;
+        }
+        if (entry.type) {
+          acc.byType[entry.type]++;
+        }
+        if (entry.difficulty) {
+          acc.byDifficulty[entry.difficulty]++;
+        }
+        return acc;
+      },
+      {
+        total: 0,
+        byStatus: {
+          [StudyStatus.NOT_LEARNED]: 0,
+          [StudyStatus.LEARNING]: 0,
+          [StudyStatus.REVIEWING]: 0,
+          [StudyStatus.MASTERED]: 0,
+        },
+        byType: {
+          // Initialize all WordType keys to 0
+          ...(Object.keys(WordType) as Array<keyof typeof WordType>).reduce(
+            (acc, key) => ({ ...acc, [WordType[key]]: 0 }),
+            {}
+          ),
+        },
+        byDifficulty: { beginner: 0, intermediate: 0, advanced: 0 },
+      }
     );
-  };
-
-  const deleteEntry = (id: string) => {
-    setEntries((prev) => prev.filter((entry) => entry.id !== id));
-  };
-
-  const getStats = (): VocabularyStats => {
-    const stats: VocabularyStats = {
-      total: entries.length,
-      byStatus: {
-        new: 0,
-        learning: 0,
-        reviewing: 0,
-        mastered: 0,
-      },
-      byType: {
-        noun: 0,
-        verb: 0,
-        adjective: 0,
-        adverb: 0,
-        particle: 0,
-        conjunction: 0,
-        interjection: 0,
-        counter: 0,
-        expression: 0,
-      },
-      byDifficulty: {
-        beginner: 0,
-        intermediate: 0,
-        advanced: 0,
-      },
-    };
-
-    entries.forEach((entry) => {
-      stats.byStatus[entry.status]++;
-      stats.byType[entry.type]++;
-      stats.byDifficulty[entry.difficulty]++;
-    });
-
-    return stats;
-  };
+  }, [entries]);
 
   return {
     entries,
     loading,
+    error,
     addEntry,
     updateEntry,
     deleteEntry,

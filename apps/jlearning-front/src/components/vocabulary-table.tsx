@@ -8,7 +8,12 @@ import { Input } from "./ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Badge } from "./ui/badge"
 import { Trash2, Search, Filter, Plus } from "lucide-react"
-import type { VocabularyEntry, WordType, StudyStatus, DifficultyLevel } from "../types/vocabulary"
+import {
+  type VocabularyEntry,
+  WordType,
+  StudyStatus,
+  DifficultyLevel,
+} from "@jlearning-monorepo/api-common/shared/vocabulary"
 
 interface VocabularyTableProps {
   entries: VocabularyEntry[]
@@ -38,9 +43,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
     translation: "",
     pronunciation: "",
     exampleSentence: "",
-    type: "noun",
-    difficulty: "beginner",
-    status: "new",
+    type: WordType.NOUN,
+    difficulty: DifficultyLevel.BEGINNER,
+    status: StudyStatus.NOT_LEARNED,
     notes: "",
   })
 
@@ -159,9 +164,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
         translation: "",
         pronunciation: "",
         exampleSentence: "",
-        type: "noun",
-        difficulty: "beginner",
-        status: "new",
+        type: WordType.NOUN,
+        difficulty: DifficultyLevel.BEGINNER,
+        status: StudyStatus.NOT_LEARNED,
         notes: "",
       })
       setShowNewRow(false)
@@ -215,10 +220,10 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="new">New</SelectItem>
-              <SelectItem value="learning">Learning</SelectItem>
-              <SelectItem value="reviewing">Reviewing</SelectItem>
-              <SelectItem value="mastered">Mastered</SelectItem>
+              <SelectItem value={StudyStatus.NOT_LEARNED}>Not Learned</SelectItem>
+              <SelectItem value={StudyStatus.LEARNING}>Learning</SelectItem>
+              <SelectItem value={StudyStatus.REVIEWING}>Reviewing</SelectItem>
+              <SelectItem value={StudyStatus.MASTERED}>Mastered</SelectItem>
             </SelectContent>
           </Select>
         )
@@ -283,8 +288,8 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
       case "reviewing":
         return "bg-blue-600 text-white dark:bg-blue-700 dark:text-white"
       case "learning":
-        return "bg-amber-600 text-white dark:bg-amber-700 dark:text-white"
-      case "new":
+        return "bg-orange-600 text-white dark:bg-orange-700 dark:text-white"
+      case "not_learned":
         return "bg-slate-600 text-white dark:bg-slate-700 dark:text-white"
       default:
         return "bg-slate-600 text-white dark:bg-slate-700 dark:text-white"
@@ -379,10 +384,10 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="new">New</SelectItem>
-            <SelectItem value="learning">Learning</SelectItem>
-            <SelectItem value="reviewing">Reviewing</SelectItem>
-            <SelectItem value="mastered">Mastered</SelectItem>
+            <SelectItem value={StudyStatus.NOT_LEARNED}>Not Learned</SelectItem>
+            <SelectItem value={StudyStatus.LEARNING}>Learning</SelectItem>
+            <SelectItem value={StudyStatus.REVIEWING}>Reviewing</SelectItem>
+            <SelectItem value={StudyStatus.MASTERED}>Mastered</SelectItem>
           </SelectContent>
         </Select>
 
@@ -501,10 +506,10 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="learning">Learning</SelectItem>
-                      <SelectItem value="reviewing">Reviewing</SelectItem>
-                      <SelectItem value="mastered">Mastered</SelectItem>
+                      <SelectItem value={StudyStatus.NOT_LEARNED}>Not Learned</SelectItem>
+                      <SelectItem value={StudyStatus.LEARNING}>Learning</SelectItem>
+                      <SelectItem value={StudyStatus.REVIEWING}>Reviewing</SelectItem>
+                      <SelectItem value={StudyStatus.MASTERED}>Mastered</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>

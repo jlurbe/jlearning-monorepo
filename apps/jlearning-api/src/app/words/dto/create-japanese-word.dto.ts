@@ -12,7 +12,7 @@ import {
   WordType,
   StudyStatus,
   DifficultyLevel,
-} from '../../enums/vocabulary.enums';
+} from '@jlearning-monorepo/api-common/shared/vocabulary';
 import { CreateExampleSentenceDto } from './create-example-sentence.dto';
 
 export class CreateJapaneseWordDto {

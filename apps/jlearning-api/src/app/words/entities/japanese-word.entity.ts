@@ -10,7 +10,7 @@ import {
   StudyStatus,
   DifficultyLevel,
   WordType,
-} from '../../enums/vocabulary.enums';
+} from '@jlearning-monorepo/api-common/shared/vocabulary';
 import { ExampleSentence } from './example-sentence.entity';
 
 @Entity('japanese_words')
