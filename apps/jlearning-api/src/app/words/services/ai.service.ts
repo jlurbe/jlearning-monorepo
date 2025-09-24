@@ -5,6 +5,8 @@ import {
   VocabularyEntry,
   WordType,
 } from '@jlearning-monorepo/api-common/shared/vocabulary';
+import { GoogleGenAI } from '@google/genai';
+import { GET_VOCABULARY_PROMPT } from '../consts/prompt';
 
 @Injectable()
 export class AiService {
@@ -13,27 +15,19 @@ export class AiService {
   async getVocabularyFromText(
     text: string
   ): Promise<Partial<VocabularyEntry>[]> {
-    const simulatedAiResponse = this.simulateAiResponse(text);
-    return this.parseMarkdownTable(simulatedAiResponse);
-  }
+    const ai = new GoogleGenAI({});
 
-  private simulateAiResponse(text: string): string {
-    // This is a mock response based on the user's prompt example.
-    // A real implementation would use the `text` variable in a prompt to an AI.
-    if (text.includes('学校')) {
-      return `
-| Word | Reading | Translation | Pronunciation | Example Sentence | Type | Notes |
-|---|---|---|---|---|---|---|
-| 学校 | がっこう | school | gakkō | 学校へ行きます。(がっこう へ いきます。) “I go to school.” | noun | A place where students study; used with へ or に for direction. |
-| へ | へ | (direction particle) | e | 日本へ行きます。(にほん へ いきます。) “I go to Japan.” | particle | Indicates direction or destination; pronounced “え”. |
-| 行きます | いきます | to go | ikimasu | 明日行きます。(あした いきます。) “I will go tomorrow.” | verb | Polite form of 行く; used for movement toward a place. |
-      `;
-    }
-    return `
-| Word | Reading | Translation | Pronunciation | Example Sentence | Type | Notes |
-|---|---|---|---|---|---|---|
-| 日本語 | にほんご | Japanese language | nihongo | 日本語は面白いです。(にほんごは おもしろいです。) "Japanese is interesting." | noun | The language of Japan. |
-    `;
+    const aiResponse = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: `${GET_VOCABULARY_PROMPT.replace(
+        '[PASTE_JAPANESE_TEXT_HERE]',
+        text
+      )}`,
+    });
+
+    console.log(aiResponse.text);
+
+    return this.parseMarkdownTable(aiResponse.text);
   }
 
   private parseMarkdownTable(markdown: string): Partial<VocabularyEntry>[] {

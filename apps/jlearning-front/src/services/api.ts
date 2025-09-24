@@ -32,6 +32,13 @@ export const addWord = async (
   };
 };
 
+export const addManyWords = async (
+  entries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
+): Promise<{ created: number }> => {
+  const response = await apiClient.post('/words/batch', { words: entries });
+  return response.data;
+};
+
 export const updateWord = async (
   id: string,
   updates: Partial<VocabularyEntry>

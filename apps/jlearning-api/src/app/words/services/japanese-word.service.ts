@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, InsertResult, Repository } from 'typeorm';
 import { JapaneseWord } from '../entities/japanese-word.entity';
 import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
 
@@ -18,6 +18,22 @@ export class JapaneseWordService {
     return this.japaneseWordRepository.save(newWord);
   }
 
+  async createManyJapaneseWords(
+    wordsData: CreateJapaneseWordDto[]
+  ): Promise<InsertResult> {
+    // Using the query builder allows us to specify an `orIgnore` instruction.
+    // This tells the database (SQLite in this case) to simply skip inserting
+    // a row if it would violate a UNIQUE constraint (like on our 'word' column).
+    // This is highly efficient for bulk inserts where duplicates might exist.
+    return this.japaneseWordRepository
+      .createQueryBuilder()
+      .insert()
+      .into(JapaneseWord)
+      .values(wordsData)
+      .orIgnore()
+      .execute();
+  }
+
   async getAllJapaneseWords(): Promise<JapaneseWord[]> {
     return this.japaneseWordRepository.find();
   }
@@ -25,6 +41,12 @@ export class JapaneseWordService {
   async getJapaneseWordById(id: string): Promise<JapaneseWord | null> {
     return this.japaneseWordRepository.findOne({
       where: { id },
+    });
+  }
+
+  async getJapaneseWordByWord(word: string): Promise<JapaneseWord | null> {
+    return this.japaneseWordRepository.findOne({
+      where: { word },
     });
   }
 

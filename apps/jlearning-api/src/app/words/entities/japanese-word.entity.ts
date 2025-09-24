@@ -17,8 +17,8 @@ export class JapaneseWord implements VocabularyEntry {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'text', nullable: false })
-  word: string; // Kanji/Kana
+  @Column({ type: 'text', nullable: false, unique: true })
+  word: string;
 
   @Column({ type: 'text', nullable: true })
   reading: string | null; // Hiragana/Katakana

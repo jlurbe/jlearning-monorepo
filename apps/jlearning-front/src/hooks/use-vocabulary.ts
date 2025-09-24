@@ -46,13 +46,10 @@ export function useVocabulary() {
     newEntries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
   ) => {
     try {
-      // We can't use Promise.all because of a limitation in the mock API.
-      // In a real scenario, you could have a batch-create endpoint.
-      const addedEntries: VocabularyEntry[] = [];
-      for (const entry of newEntries) {
-        addedEntries.push(await api.addWord(entry));
-      }
-      setEntries((prev) => [...prev, ...addedEntries]);
+      // Use the new, efficient batch endpoint
+      await api.addManyWords(newEntries);
+      // After a successful batch-add, refetch all words to get the updated list
+      await fetchWords();
     } catch (err) {
       console.error('Failed to add multiple words:', err);
     }
