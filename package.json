@@ -10,9 +10,11 @@
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/typeorm": "^11.0.0",
+    "@radix-ui/react-select": "^2.2.6",
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -20,6 +22,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
     "sqlite3": "^5.1.7",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
     "typeorm": "^0.3.27"
   },
   "devDependencies": {

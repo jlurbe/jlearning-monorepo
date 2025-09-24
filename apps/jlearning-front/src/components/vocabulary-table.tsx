@@ -182,50 +182,35 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
     const isEditing = editingCell?.rowId === entry.id && editingCell?.field === field
 
     if (isEditing) {
-      if (field === "type") {
-        return (
-          <Select value={editValue} onValueChange={(val) => handleDropdownChange(val, entry.id, field)}>
-            <SelectTrigger className="h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(WordType).map((type) => (
-                <SelectItem key={type} value={type}>{formatEnumValue(type)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )
-      }
+      const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+          setEditingCell(null);
+        }
+      };
 
-      if (field === "difficulty") {
-        return (
-          <Select value={editValue} onValueChange={(val) => handleDropdownChange(val, entry.id, field)}>
-            <SelectTrigger className="h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(DifficultyLevel).map((level) => (
-                <SelectItem key={level} value={level}>{formatEnumValue(level)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )
-      }
+      const renderSelect = (enumObject: object) => (
+        <Select
+          open={true}
+          onOpenChange={handleOpenChange}
+          value={editValue}
+          onValueChange={(val) => handleDropdownChange(val, entry.id, field)}
+        >
+          <SelectTrigger className="h-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.values(enumObject).map((enumValue) => (
+              <SelectItem key={enumValue} value={enumValue}>
+                {formatEnumValue(enumValue)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
 
-      if (field === "status") {
-        return (
-          <Select value={editValue} onValueChange={(val) => handleDropdownChange(val, entry.id, field)}>
-            <SelectTrigger className="h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.values(StudyStatus).map((status) => (
-                <SelectItem key={status} value={status}>{formatEnumValue(status)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )
-      }
+      if (field === "type") return renderSelect(WordType);
+      if (field === "difficulty") return renderSelect(DifficultyLevel);
+      if (field === "status") return renderSelect(StudyStatus);
     }
 
     // Render colored badges for non-editing state

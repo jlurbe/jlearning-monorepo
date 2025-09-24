@@ -18,24 +18,24 @@ export class CreateJapaneseWordDto {
   word: string;
 
   @IsString()
-  @IsNotEmpty()
-  reading: string;
+  @IsOptional()
+  reading?: string;
 
   @IsString()
-  @IsNotEmpty()
-  translation: string;
+  @IsOptional()
+  translation?: string;
 
   @IsString()
-  @IsNotEmpty()
-  pronunciation: string;
+  @IsOptional()
+  pronunciation?: string;
 
   @IsString()
   @IsOptional()
   exampleSentence?: string;
 
   @IsEnum(WordType)
-  @IsNotEmpty()
-  type: WordType;
+  @IsOptional()
+  type?: WordType;
 
   @IsString()
   @IsOptional()

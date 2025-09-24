@@ -20,20 +20,20 @@ export class JapaneseWord implements VocabularyEntry {
   @Column({ type: 'text', nullable: false })
   word: string; // Kanji/Kana
 
-  @Column({ type: 'text', nullable: false })
-  reading: string; // Hiragana/Katakana
+  @Column({ type: 'text', nullable: true })
+  reading: string | null; // Hiragana/Katakana
 
-  @Column({ type: 'text', nullable: false })
-  translation: string; // English meaning
+  @Column({ type: 'text', nullable: true })
+  translation: string | null; // English meaning
 
-  @Column({ type: 'text', nullable: false })
-  pronunciation: string; // Romaji
+  @Column({ type: 'text', nullable: true })
+  pronunciation: string | null; // Romaji
 
   @Column({ type: 'text', nullable: true, name: 'example_sentence' })
   exampleSentence: string | null;
 
-  @Column({ type: 'simple-enum', enum: WordType, nullable: false })
-  type: WordType; // Noun, Verb, etc.
+  @Column({ type: 'simple-enum', enum: WordType, nullable: true })
+  type: WordType | null; // Noun, Verb, etc.
 
   @Column({ type: 'text', nullable: true })
   notes: string | null; // Usage, nuance
