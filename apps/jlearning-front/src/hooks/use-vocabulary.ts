@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   type VocabularyEntry,
+  DifficultyLevel,
   StudyStatus,
   WordType,
 } from '@jlearning-monorepo/api-common/shared/vocabulary';
@@ -82,14 +83,16 @@ export function useVocabulary() {
           [StudyStatus.REVIEWING]: 0,
           [StudyStatus.MASTERED]: 0,
         },
-        byType: {
-          // Initialize all WordType keys to 0
-          ...(Object.keys(WordType) as Array<keyof typeof WordType>).reduce(
-            (acc, key) => ({ ...acc, [WordType[key]]: 0 }),
-            {}
-          ),
-        },
-        byDifficulty: { beginner: 0, intermediate: 0, advanced: 0 },
+        byType: (Object.values(WordType) as WordType[]).reduce((acc, type) => {
+          acc[type] = 0;
+          return acc;
+        }, {} as Record<WordType, number>),
+        byDifficulty: (
+          Object.values(DifficultyLevel) as DifficultyLevel[]
+        ).reduce((acc, difficulty) => {
+          acc[difficulty] = 0;
+          return acc;
+        }, {} as Record<DifficultyLevel, number>),
       }
     );
   }, [entries]);

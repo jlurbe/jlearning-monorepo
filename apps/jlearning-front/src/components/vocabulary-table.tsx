@@ -363,7 +363,7 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
           />
         </div>
 
-        <Select value={filterType} onValueChange={(value: WordType | "all") => setFilterType(value)}>
+        <Select value={filterType} onValueChange={(value) => setFilterType(value as WordType | "all")}>
           <SelectTrigger className="w-full sm:w-48">
             <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Filter by type" />
@@ -378,7 +378,7 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
           </SelectContent>
         </Select>
 
-        <Select value={filterStatus} onValueChange={(value: StudyStatus | "all") => setFilterStatus(value)}>
+        <Select value={filterStatus} onValueChange={(value) => setFilterStatus(value as StudyStatus | "all")}>
           <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
@@ -463,44 +463,44 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                 </td>
                 <td className="p-3">
                   <Select
-                    value={newEntry.type}
-                    onValueChange={(value: WordType) => setNewEntry({ ...newEntry, type: value })}
+                    value={newEntry.type as string}
+                    onValueChange={(value) => setNewEntry({ ...newEntry, type: value as WordType })}
                   >
                     <SelectTrigger className="h-8">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="noun">Noun</SelectItem>
-                      <SelectItem value="verb">Verb</SelectItem>
-                      <SelectItem value="adjective">Adjective</SelectItem>
-                      <SelectItem value="adverb">Adverb</SelectItem>
-                      <SelectItem value="particle">Particle</SelectItem>
-                      <SelectItem value="conjunction">Conjunction</SelectItem>
-                      <SelectItem value="interjection">Interjection</SelectItem>
-                      <SelectItem value="counter">Counter</SelectItem>
-                      <SelectItem value="expression">Expression</SelectItem>
+                      <SelectItem value={WordType.NOUN}>Noun</SelectItem>
+                      <SelectItem value={WordType.VERB}>Verb</SelectItem>
+                      <SelectItem value={WordType.ADJECTIVE}>Adjective</SelectItem>
+                      <SelectItem value={WordType.ADVERB}>Adverb</SelectItem>
+                      <SelectItem value={WordType.PARTICLE}>Particle</SelectItem>
+                      <SelectItem value={WordType.CONJUNCTION}>Conjunction</SelectItem>
+                      <SelectItem value={WordType.INTERJECTION}>Interjection</SelectItem>
+                      <SelectItem value={WordType.COUNTER}>Counter</SelectItem>
+                      <SelectItem value={WordType.EXPRESSION}>Expression</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
                 <td className="p-3">
                   <Select
-                    value={newEntry.difficulty}
-                    onValueChange={(value: DifficultyLevel) => setNewEntry({ ...newEntry, difficulty: value })}
+                    value={newEntry.difficulty as string}
+                    onValueChange={(value) => setNewEntry({ ...newEntry, difficulty: value as DifficultyLevel })}
                   >
                     <SelectTrigger className="h-8">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="beginner">Beginner</SelectItem>
-                      <SelectItem value="intermediate">Intermediate</SelectItem>
-                      <SelectItem value="advanced">Advanced</SelectItem>
+                      <SelectItem value={DifficultyLevel.BEGINNER}>Beginner</SelectItem>
+                      <SelectItem value={DifficultyLevel.INTERMEDIATE}>Intermediate</SelectItem>
+                      <SelectItem value={DifficultyLevel.ADVANCED}>Advanced</SelectItem>
                     </SelectContent>
                   </Select>
                 </td>
                 <td className="p-3">
                   <Select
                     value={newEntry.status}
-                    onValueChange={(value: StudyStatus) => setNewEntry({ ...newEntry, status: value })}
+                    onValueChange={(value) => setNewEntry({ ...newEntry, status: value as StudyStatus })}
                   >
                     <SelectTrigger className="h-8">
                       <SelectValue />

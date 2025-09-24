@@ -4,7 +4,7 @@ import { VocabularyTable } from "./vocabulary-table"
 import { VocabularyStats } from "./vocabulary-stats"
 import { BookOpen } from "lucide-react"
 import { useVocabulary } from "../hooks/use-vocabulary"
-import type { VocabularyEntry } from "@jlearning-monorepo/api-common/shared/vocabulary"
+import type { VocabularyEntry, VocabularyStats as StatsType } from "@jlearning-monorepo/api-common/shared/vocabulary"
 
 export function VocabularyManager() {
   const { entries, loading, addEntry, updateEntry, deleteEntry, getStats } = useVocabulary()
@@ -35,8 +35,8 @@ export function VocabularyManager() {
   }
 
   return (
-    <div className="space-y-6">
-      <VocabularyStats stats={stats} />
+    <div className="space-y-6"> 
+      <VocabularyStats stats={stats as StatsType} />
 
       <Card>
         <CardContent className="p-0">
