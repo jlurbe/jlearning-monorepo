@@ -23,8 +23,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | object =
       'An unexpected internal server error occurred.';
-
-    this.logger.error('Unhandled exception:', exception);
+    let stack: string | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -32,16 +31,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof QueryFailedError) {
       status = HttpStatus.BAD_REQUEST; // Treat DB constraint errors as bad requests
       message = 'A database constraint was violated.';
-      this.logger.error(
-        `QueryFailedError: ${exception.message}`,
-        exception.stack
-      );
+      this.logger.error(`QueryFailedError: ${exception.message}`);
+      stack = exception.stack;
     } else if (exception instanceof Error) {
       message = exception.message;
-      this.logger.error(
-        `Unhandled Error: ${exception.message}`,
-        exception.stack
-      );
+      this.logger.error(`Unhandled Error: ${exception.message}`);
+      stack = exception.stack;
     } else {
       this.logger.error('Unhandled non-error exception:', exception);
     }
@@ -56,6 +51,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
           ? message
           : (message as any).message || 'Internal server error',
       ...(typeof message === 'object' && { details: message }),
+      ...(process.env.NODE_ENV !== 'production' && { stack }),
     };
 
     this.logger.error(
