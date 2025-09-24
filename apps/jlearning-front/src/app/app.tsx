@@ -1,50 +1,15 @@
-import NxWelcome from './nx-welcome';
+import { VocabularyManager } from "../components/vocabulary-manager"
 
-import { Route, Routes, Link } from 'react-router-dom';
-
-export function App() {
+export default function Home() {
   return (
-    <div>
-      <NxWelcome title="jlearning-front" />
-
-      {/* START: routes */}
-      {/* These routes and navigation have been generated for you */}
-      {/* Feel free to move and update them to fit your needs */}
-      <br />
-      <hr />
-      <br />
-      <div role="navigation">
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/page-2">Page 2</Link>
-          </li>
-        </ul>
+    <main className="min-h-screen bg-background">
+      <div className="container mx-auto py-8 px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2">日本語学習アプリ</h1>
+          <p className="text-lg text-muted-foreground">Japanese Language Learning App</p>
+        </div>
+        <VocabularyManager />
       </div>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              This is the generated root route.{' '}
-              <Link to="/page-2">Click here for page 2.</Link>
-            </div>
-          }
-        />
-        <Route
-          path="/page-2"
-          element={
-            <div>
-              <Link to="/">Click here to go back to root page.</Link>
-            </div>
-          }
-        />
-      </Routes>
-      {/* END: routes */}
-    </div>
-  );
+    </main>
+  )
 }
-
-export default App;
