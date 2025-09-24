@@ -24,7 +24,7 @@ export enum WordType {
 }
 
 export interface VocabularyEntry {
-  id: string; // Use string for frontend consistency
+  id: string;
   word: string;
   reading: string;
   translation: string;

@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe,
+  ParseUUIDPipe,
   NotFoundException,
   HttpCode,
   HttpStatus,
@@ -21,11 +21,7 @@ export class WordsController {
 
   @Post()
   create(@Body() createJapaneseWordDto: CreateJapaneseWordDto) {
-    const { exampleSentences, ...wordData } = createJapaneseWordDto;
-    return this.japaneseWordService.createJapaneseWord(
-      wordData,
-      exampleSentences
-    );
+    return this.japaneseWordService.createJapaneseWord(createJapaneseWordDto);
   }
 
   @Get()
@@ -34,7 +30,7 @@ export class WordsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const word = await this.japaneseWordService.getJapaneseWordById(id);
     if (!word) {
       throw new NotFoundException(`Word with ID ${id} not found`);
@@ -44,14 +40,12 @@ export class WordsController {
 
   @Patch(':id')
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateJapaneseWordDto: UpdateJapaneseWordDto
   ) {
-    const { exampleSentences, ...wordData } = updateJapaneseWordDto;
-    // Note: This simple update doesn't handle updating/adding/removing example sentences, only the word's properties.
     const updatedWord = await this.japaneseWordService.updateJapaneseWord(
       id,
-      wordData
+      updateJapaneseWordDto
     );
     if (!updatedWord) {
       throw new NotFoundException(`Word with ID ${id} not found`);
@@ -61,7 +55,7 @@ export class WordsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     const result = await this.japaneseWordService.deleteJapaneseWord(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Word with ID ${id} not found`);

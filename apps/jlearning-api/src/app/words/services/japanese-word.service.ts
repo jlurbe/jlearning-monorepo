@@ -2,12 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import { JapaneseWord } from '../entities/japanese-word.entity';
-import { ExampleSentence } from '../entities/example-sentence.entity';
-import {
-  StudyStatus,
-  DifficultyLevel,
-  WordType,
-} from '@jlearning-monorepo/api-common/shared/vocabulary';
+import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
 
 @Injectable()
 export class JapaneseWordService {
@@ -17,46 +12,25 @@ export class JapaneseWordService {
   ) {}
 
   async createJapaneseWord(
-    wordData: {
-      word: string;
-      reading: string;
-      translation: string;
-      pronunciation: string;
-      type: WordType;
-      notes?: string;
-      status?: StudyStatus;
-      difficulty?: DifficultyLevel;
-      reviewedAt?: Date;
-    },
-    exampleSentencesData: Array<{
-      sentenceJp: string;
-      sentenceReading: string;
-      sentenceEn: string;
-    }> = []
+    wordData: CreateJapaneseWordDto
   ): Promise<JapaneseWord> {
-    const newWord = this.japaneseWordRepository.create({
-      ...wordData,
-      exampleSentences: exampleSentencesData,
-    });
+    const newWord = this.japaneseWordRepository.create(wordData);
     return this.japaneseWordRepository.save(newWord);
   }
 
   async getAllJapaneseWords(): Promise<JapaneseWord[]> {
-    return this.japaneseWordRepository.find({
-      relations: ['exampleSentences'],
-    });
+    return this.japaneseWordRepository.find();
   }
 
-  async getJapaneseWordById(id: number): Promise<JapaneseWord | null> {
+  async getJapaneseWordById(id: string): Promise<JapaneseWord | null> {
     return this.japaneseWordRepository.findOne({
       where: { id },
-      relations: ['exampleSentences'],
     });
   }
 
   async updateJapaneseWord(
-    id: number,
-    updates: Partial<JapaneseWord>
+    id: string,
+    updates: Partial<JapaneseWord> // This `id` parameter will be updated in the controller
   ): Promise<JapaneseWord | null> {
     const word = await this.japaneseWordRepository.findOneBy({ id });
     if (!word) return null;
@@ -64,7 +38,7 @@ export class JapaneseWordService {
     return this.japaneseWordRepository.save(word);
   }
 
-  async deleteJapaneseWord(id: number): Promise<DeleteResult> {
+  async deleteJapaneseWord(id: string): Promise<DeleteResult> {
     return this.japaneseWordRepository.delete(id);
   }
 }

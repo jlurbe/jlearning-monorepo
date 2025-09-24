@@ -1,5 +1,4 @@
 @baseUrl = http://localhost:3000/api
-@wordId = 1
 
 ### Create a new Japanese word with example sentences
 POST {{baseUrl}}/words
@@ -12,15 +11,9 @@ Content-Type: application/json
   "pronunciation": "nihongo",
   "type": "noun",
   "notes": "The language spoken in Japan.",
-  "status": "in_progress",
+  "status": "learning",
   "difficulty": "beginner",
-  "exampleSentences": [
-    {
-      "sentenceJp": "日本語を勉強しています。",
-      "sentenceReading": "にほんごをべんきょうしています。",
-      "sentenceEn": "I am studying Japanese."
-    }
-  ]
+  "exampleSentence": "日本語を勉強しています。(にほんごをべんきょうしています。) \"I am studying Japanese.\""
 }
 
 ### Get all Japanese words
@@ -31,13 +24,15 @@ GET {{baseUrl}}/words
 GET {{baseUrl}}/words/{{wordId}}
 
 ### Update a Japanese word
+# @prompt wordId
 PATCH {{baseUrl}}/words/{{wordId}}
 Content-Type: application/json
 
 {
-  "status": "learned",
+  "status": "mastered",
   "notes": "This word is now learned. Review occasionally."
 }
 
 ### Delete a Japanese word
+# @prompt wordId
 DELETE {{baseUrl}}/words/{{wordId}}

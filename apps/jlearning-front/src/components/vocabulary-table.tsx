@@ -409,6 +409,7 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
               <th className="text-left p-3 font-semibold">Translation</th>
               <th className="text-left p-3 font-semibold">Pronunciation</th>
               <th className="text-left p-3 font-semibold">Example</th>
+              <th className="text-left p-3 font-semibold">Notes</th>
               <th className="text-left p-3 font-semibold">Type</th>
               <th className="text-left p-3 font-semibold">Difficulty</th>
               <th className="text-left p-3 font-semibold">Status</th>
@@ -453,8 +454,20 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                 <td className="p-3">
                   <Input
                     value={newEntry.exampleSentence}
-                    onChange={(e) => setNewEntry({ ...newEntry, exampleSentence: e.target.value })}
+                    onChange={(e) =>
+                      setNewEntry({ ...newEntry, exampleSentence: e.target.value })
+                    }
                     placeholder="Example..."
+                    className="h-8"
+                  />
+                </td>
+                <td className="p-3">
+                  <Input
+                    value={newEntry.notes || ''}
+                    onChange={(e) =>
+                      setNewEntry({ ...newEntry, notes: e.target.value })
+                    }
+                    placeholder="Notes..."
                     className="h-8"
                   />
                 </td>
@@ -539,6 +552,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                 </td>
                 <td className="p-3 max-w-xs">
                   <div className="text-sm">{renderEditableCell(entry, "exampleSentence", entry.exampleSentence)}</div>
+                </td>
+                <td className="p-3 max-w-xs">
+                  <div className="text-sm">{renderEditableCell(entry, "notes", entry.notes)}</div>
                 </td>
                 <td className="p-3">{renderBadgeCell(entry, "type", entry.type)}</td>
                 <td className="p-3">{renderBadgeCell(entry, "difficulty", entry.difficulty)}</td>

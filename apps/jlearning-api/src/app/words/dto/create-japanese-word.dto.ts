@@ -4,8 +4,6 @@ import {
   IsEnum,
   IsOptional,
   IsDate,
-  IsArray,
-  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
@@ -13,7 +11,6 @@ import {
   StudyStatus,
   DifficultyLevel,
 } from '@jlearning-monorepo/api-common/shared/vocabulary';
-import { CreateExampleSentenceDto } from './create-example-sentence.dto';
 
 export class CreateJapaneseWordDto {
   @IsString()
@@ -31,6 +28,10 @@ export class CreateJapaneseWordDto {
   @IsString()
   @IsNotEmpty()
   pronunciation: string;
+
+  @IsString()
+  @IsOptional()
+  exampleSentence?: string;
 
   @IsEnum(WordType)
   @IsNotEmpty()
@@ -52,10 +53,4 @@ export class CreateJapaneseWordDto {
   @Type(() => Date)
   @IsOptional()
   reviewedAt?: Date;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateExampleSentenceDto)
-  @IsOptional()
-  exampleSentences?: CreateExampleSentenceDto[];
 }

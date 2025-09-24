@@ -4,19 +4,18 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 import {
   StudyStatus,
   DifficultyLevel,
   WordType,
+  VocabularyEntry,
 } from '@jlearning-monorepo/api-common/shared/vocabulary';
-import { ExampleSentence } from './example-sentence.entity';
 
 @Entity('japanese_words')
-export class JapaneseWord {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class JapaneseWord implements VocabularyEntry {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'text', nullable: false })
   word: string; // Kanji/Kana
@@ -29,6 +28,9 @@ export class JapaneseWord {
 
   @Column({ type: 'text', nullable: false })
   pronunciation: string; // Romaji
+
+  @Column({ type: 'text', nullable: true, name: 'example_sentence' })
+  exampleSentence: string | null;
 
   @Column({ type: 'simple-enum', enum: WordType, nullable: false })
   type: WordType; // Noun, Verb, etc.
@@ -58,11 +60,4 @@ export class JapaneseWord {
 
   @Column({ type: 'datetime', nullable: true, name: 'reviewed_at' })
   reviewedAt: Date | null;
-
-  @OneToMany(
-    () => ExampleSentence,
-    (exampleSentence) => exampleSentence.japaneseWord,
-    { cascade: true }
-  )
-  exampleSentences: ExampleSentence[];
 }

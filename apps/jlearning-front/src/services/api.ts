@@ -12,11 +12,8 @@ export const getWords = async (): Promise<VocabularyEntry[]> => {
   const response = await apiClient.get('/words');
   // The API returns 'id' as a number, but the frontend might expect a string.
   // Also, the API uses createdAt/updatedAt, but the component might not.
-  // We map the response to match the frontend type.
-  return response.data.map((word: any) => ({
-    ...word,
-    id: String(word.id),
-  }));
+  // The backend now returns UUIDs as strings, so no explicit conversion is needed.
+  return response.data;
 };
 
 export const addWord = async (
@@ -25,7 +22,6 @@ export const addWord = async (
   const response = await apiClient.post('/words', entry);
   return {
     ...response.data,
-    id: String(response.data.id),
   };
 };
 
@@ -34,10 +30,7 @@ export const updateWord = async (
   updates: Partial<VocabularyEntry>
 ): Promise<VocabularyEntry> => {
   const response = await apiClient.patch(`/words/${id}`, updates);
-  return {
-    ...response.data,
-    id: String(response.data.id),
-  };
+  return response.data;
 };
 
 export const deleteWord = async (id: string): Promise<void> => {
