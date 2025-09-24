@@ -1,5 +1,5 @@
 export enum StudyStatus {
-  NOT_LEARNED = 'not_learned',
+  NEW = 'new',
   LEARNING = 'learning',
   REVIEWING = 'reviewing',
   MASTERED = 'mastered',

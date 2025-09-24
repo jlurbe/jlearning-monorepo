@@ -16,6 +16,13 @@ export const getWords = async (): Promise<VocabularyEntry[]> => {
   return response.data;
 };
 
+export const analyzeText = async (
+  text: string
+): Promise<Partial<VocabularyEntry>[]> => {
+  const response = await apiClient.post('/words/analyze', { text });
+  return response.data;
+};
+
 export const addWord = async (
   entry: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<VocabularyEntry> => {

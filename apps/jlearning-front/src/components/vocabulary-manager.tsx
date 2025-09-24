@@ -4,10 +4,14 @@ import { VocabularyTable } from "./vocabulary-table"
 import { VocabularyStats } from "./vocabulary-stats"
 import { BookOpen } from "lucide-react"
 import { useVocabulary } from "../hooks/use-vocabulary"
-import type { VocabularyEntry, VocabularyStats as StatsType } from "@jlearning-monorepo/api-common/shared/vocabulary"
+import type {
+  VocabularyEntry,
+  VocabularyStats as StatsType,
+} from '@jlearning-monorepo/api-common/shared/vocabulary';
 
 export function VocabularyManager() {
-  const { entries, loading, addEntry, updateEntry, deleteEntry, getStats } = useVocabulary()
+  const { entries, loading, addEntry, addMultipleEntries, updateEntry, deleteEntry, getStats } =
+    useVocabulary();
 
   const handleUpdateEntry = (id: string, updates: Partial<VocabularyEntry>) => {
     updateEntry(id, updates)
@@ -19,6 +23,12 @@ export function VocabularyManager() {
 
   const handleAddEntry = (entry: Omit<VocabularyEntry, "id" | "createdAt" | "updatedAt">) => {
     addEntry(entry)
+  }
+
+  const handleAddMultipleEntries = (
+    entries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
+  ) => {
+    addMultipleEntries(entries);
   }
 
   const stats = getStats()
@@ -45,6 +55,7 @@ export function VocabularyManager() {
             onUpdate={handleUpdateEntry}
             onDelete={handleDeleteEntry}
             onAdd={handleAddEntry}
+            onAddMultiple={handleAddMultipleEntries}
           />
         </CardContent>
       </Card>

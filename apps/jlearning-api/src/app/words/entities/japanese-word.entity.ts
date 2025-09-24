@@ -41,7 +41,7 @@ export class JapaneseWord implements VocabularyEntry {
   @Column({
     type: 'simple-enum',
     enum: StudyStatus,
-    default: StudyStatus.NOT_LEARNED,
+    default: StudyStatus.NEW,
   })
   status: StudyStatus; // Learning status
 

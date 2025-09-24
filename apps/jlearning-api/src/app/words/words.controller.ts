@@ -13,12 +13,21 @@ import {
 } from '@nestjs/common';
 import { JapaneseWordService } from './services/japanese-word.service';
 import { CreateJapaneseWordDto } from './dto/create-japanese-word.dto';
+import { AnalyzeTextDto } from './dto/analyze-text.dto';
 import { UpdateJapaneseWordDto } from './dto/update-japanese-word.dto';
+import { AiService } from './services/ai.service';
 
 @Controller('words')
 export class WordsController {
-  constructor(private readonly japaneseWordService: JapaneseWordService) {}
+  constructor(
+    private readonly japaneseWordService: JapaneseWordService,
+    private readonly aiService: AiService
+  ) {}
 
+  @Post('analyze')
+  analyzeText(@Body() analyzeTextDto: AnalyzeTextDto) {
+    return this.aiService.getVocabularyFromText(analyzeTextDto.text);
+  }
   @Post()
   create(@Body() createJapaneseWordDto: CreateJapaneseWordDto) {
     return this.japaneseWordService.createJapaneseWord(createJapaneseWordDto);

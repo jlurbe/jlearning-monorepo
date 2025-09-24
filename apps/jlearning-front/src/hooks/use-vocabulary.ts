@@ -42,6 +42,21 @@ export function useVocabulary() {
     }
   };
 
+  const addMultipleEntries = async (
+    newEntries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
+  ) => {
+    try {
+      // We can't use Promise.all because of a limitation in the mock API.
+      // In a real scenario, you could have a batch-create endpoint.
+      const addedEntries: VocabularyEntry[] = [];
+      for (const entry of newEntries) {
+        addedEntries.push(await api.addWord(entry));
+      }
+      setEntries((prev) => [...prev, ...addedEntries]);
+    } catch (err) {
+      console.error('Failed to add multiple words:', err);
+    }
+  };
   const updateEntry = async (id: string, updates: Partial<VocabularyEntry>) => {
     try {
       const updatedEntry = await api.updateWord(id, updates);
@@ -78,7 +93,7 @@ export function useVocabulary() {
       {
         total: 0,
         byStatus: {
-          [StudyStatus.NOT_LEARNED]: 0,
+          [StudyStatus.NEW]: 0,
           [StudyStatus.LEARNING]: 0,
           [StudyStatus.REVIEWING]: 0,
           [StudyStatus.MASTERED]: 0,
@@ -102,6 +117,7 @@ export function useVocabulary() {
     loading,
     error,
     addEntry,
+    addMultipleEntries,
     updateEntry,
     deleteEntry,
     getStats,

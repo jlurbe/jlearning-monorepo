@@ -1,13 +1,13 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
 import { Badge } from "./ui/badge"
-import { Trash2, Search, Filter, Plus } from "lucide-react"
+import { Trash2, Search, Filter, Plus, Sparkles } from 'lucide-react';
+import * as api from '../services/api';
 import {
   type VocabularyEntry,
   WordType,
@@ -20,6 +20,7 @@ interface VocabularyTableProps {
   onUpdate: (id: string, updates: Partial<VocabularyEntry>) => void
   onDelete: (id: string) => void
   onAdd: (entry: Omit<VocabularyEntry, "id" | "createdAt" | "updatedAt">) => void
+  onAddMultiple: (entries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
 }
 
 interface EditingCell {
@@ -27,7 +28,13 @@ interface EditingCell {
   field: keyof VocabularyEntry
 }
 
-export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: VocabularyTableProps) {
+export function VocabularyTable({
+  entries,
+  onUpdate,
+  onDelete,
+  onAdd,
+  onAddMultiple,
+}: VocabularyTableProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState<WordType | "all">("all")
   const [filterStatus, setFilterStatus] = useState<StudyStatus | "all">("all")
@@ -36,6 +43,7 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
   const inputRef = useRef<HTMLInputElement>(null)
   const tableRef = useRef<HTMLTableElement>(null)
 
+  const [isAiLoading, setIsAiLoading] = useState(false);
   const [showNewRow, setShowNewRow] = useState(false)
   const [newEntry, setNewEntry] = useState<Omit<VocabularyEntry, "id" | "createdAt" | "updatedAt">>({
     word: "",
@@ -45,11 +53,11 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
     exampleSentence: "",
     type: WordType.NOUN,
     difficulty: DifficultyLevel.BEGINNER,
-    status: StudyStatus.NOT_LEARNED,
+    status: StudyStatus.NEW,
     notes: "",
   })
 
-  // Helper to format enum values for display (e.g., 'not_learned' -> 'Not Learned')
+  // Helper to format enum values for display (e.g., 'NEW' -> 'Not Learned')
   const formatEnumValue = (value: string) => {
     return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
   };
@@ -171,13 +179,32 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
         exampleSentence: "",
         type: WordType.NOUN,
         difficulty: DifficultyLevel.BEGINNER,
-        status: StudyStatus.NOT_LEARNED,
+        status: StudyStatus.NEW,
         notes: "",
       })
       setShowNewRow(false)
     }
   }
 
+  const handleAiFill = async () => {
+    if (!newEntry.word.trim()) return;
+
+    setIsAiLoading(true);
+    try {
+      const results = await api.analyzeText(newEntry.word);
+      if (results.length > 0) {
+        onAddMultiple(results);
+        // Clear the input and hide the new row form
+        setShowNewRow(false);
+        setNewEntry({ word: '', reading: '', translation: '', pronunciation: '', exampleSentence: '', type: WordType.NOUN, difficulty: DifficultyLevel.BEGINNER, status: StudyStatus.NEW, notes: '' });
+      }
+    } catch (error) {
+      console.error('AI analysis failed:', error);
+      // You could add a toast notification here to inform the user of the failure.
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
   const renderBadgeCell = (entry: VocabularyEntry, field: keyof VocabularyEntry, value: any) => {
     const isEditing = editingCell?.rowId === entry.id && editingCell?.field === field
 
@@ -266,13 +293,13 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
 
   const getStatusColor = (status: StudyStatus) => {
     switch (status) {
-      case "mastered":
+      case StudyStatus.MASTERED:
         return "bg-green-600 text-white dark:bg-green-700 dark:text-white"
-      case "reviewing":
+      case StudyStatus.REVIEWING:
         return "bg-blue-600 text-white dark:bg-blue-700 dark:text-white"
-      case "learning":
+      case StudyStatus.LEARNING:
         return "bg-orange-600 text-white dark:bg-orange-700 dark:text-white"
-      case "not_learned":
+      case StudyStatus.NEW:
         return "bg-slate-600 text-white dark:bg-slate-700 dark:text-white"
       default:
         return "bg-slate-600 text-white dark:bg-slate-700 dark:text-white"
@@ -405,12 +432,26 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
             {showNewRow && (
               <tr className="border-b bg-muted/20">
                 <td className="p-3">
-                  <Input
-                    value={newEntry.word}
-                    onChange={(e) => setNewEntry({ ...newEntry, word: e.target.value })}
-                    placeholder="Enter word..."
-                    className="h-8"
-                  />
+                  <div className="relative flex items-center">
+                    <Input
+                      value={newEntry.word}
+                      onChange={(e) => setNewEntry({ ...newEntry, word: e.target.value })}
+                      placeholder="Enter word or sentence..."
+                      className="h-8 pr-12"
+                    />
+                    <Button
+                      size="sm"
+                      className="absolute right-1 h-7 w-10 text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                      onClick={handleAiFill}
+                      disabled={isAiLoading}
+                    >
+                      {isAiLoading ? (
+                        <Sparkles className="h-4 w-4 animate-pulse" />
+                      ) : (
+                        'AI'
+                      )}
+                    </Button>
+                  </div>
                 </td>
                 <td className="p-3">
                   <Input
