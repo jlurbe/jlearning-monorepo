@@ -168,23 +168,12 @@ export function VocabularyTable({
     }
   }
 
-  const handleAddNewEntry = () => {
-    if (newEntry.word.trim()) {
-      onAdd(newEntry)
-      setNewEntry({
-        word: "",
-        reading: "",
-        translation: "",
-        pronunciation: "",
-        exampleSentence: "",
-        type: WordType.NOUN,
-        difficulty: DifficultyLevel.BEGINNER,
-        status: StudyStatus.NEW,
-        notes: "",
-      })
-      setShowNewRow(false)
+  const handleNewEntryKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevents any default form submission behavior
+      handleAiFill();
     }
-  }
+  };
 
   const handleAiFill = async () => {
     if (!newEntry.word.trim()) return;
@@ -193,7 +182,18 @@ export function VocabularyTable({
     try {
       const results = await api.analyzeText(newEntry.word);
       if (results.length > 0) {
-        onAddMultiple(results);
+        // Ensure that the results from the API conform to the expected type
+        // by providing default values for missing properties.
+        const formattedResults = results.map(result => ({
+          word: result.word || '',
+          reading: result.reading || '',
+          translation: result.translation || '',
+          pronunciation: result.pronunciation || '',
+          exampleSentence: result.exampleSentence || '',
+          type: result.type || WordType.NOUN,
+          difficulty: result.difficulty || DifficultyLevel.BEGINNER,
+          status: result.status || StudyStatus.NEW, notes: result.notes || '' }));
+        onAddMultiple(formattedResults);
         // Clear the input and hide the new row form
         setShowNewRow(false);
         setNewEntry({ word: '', reading: '', translation: '', pronunciation: '', exampleSentence: '', type: WordType.NOUN, difficulty: DifficultyLevel.BEGINNER, status: StudyStatus.NEW, notes: '' });
@@ -431,121 +431,26 @@ export function VocabularyTable({
           <tbody>
             {showNewRow && (
               <tr className="border-b bg-muted/20">
-                <td className="p-3">
-                  <div className="relative flex items-center">
+                <td className="p-3" colSpan={9}>
+                  <div className="flex items-center gap-2">
                     <Input
                       value={newEntry.word}
                       onChange={(e) => setNewEntry({ ...newEntry, word: e.target.value })}
+                      onKeyDown={handleNewEntryKeyDown}
                       placeholder="Enter word or sentence..."
-                      className="h-8 pr-12"
+                      className="h-8 flex-grow"
                     />
-                    <Button
-                      size="sm"
-                      className="absolute right-1 h-7 w-10 text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
-                      onClick={handleAiFill}
-                      disabled={isAiLoading}
-                    >
-                      {isAiLoading ? (
-                        <Sparkles className="h-4 w-4 animate-pulse" />
-                      ) : (
-                        'AI'
-                      )}
-                    </Button>
                   </div>
                 </td>
                 <td className="p-3">
-                  <Input
-                    value={newEntry.reading}
-                    onChange={(e) => setNewEntry({ ...newEntry, reading: e.target.value })}
-                    placeholder="Reading..."
-                    className="h-8"
-                  />
-                </td>
-                <td className="p-3">
-                  <Input
-                    value={newEntry.translation}
-                    onChange={(e) => setNewEntry({ ...newEntry, translation: e.target.value })}
-                    placeholder="Translation..."
-                    className="h-8"
-                  />
-                </td>
-                <td className="p-3">
-                  <Input
-                    value={newEntry.pronunciation}
-                    onChange={(e) => setNewEntry({ ...newEntry, pronunciation: e.target.value })}
-                    placeholder="Pronunciation..."
-                    className="h-8"
-                  />
-                </td>
-                <td className="p-3">
-                  <Input
-                    value={newEntry.exampleSentence}
-                    onChange={(e) =>
-                      setNewEntry({ ...newEntry, exampleSentence: e.target.value })
-                    }
-                    placeholder="Example..."
-                    className="h-8"
-                  />
-                </td>
-                <td className="p-3">
-                  <Input
-                    value={newEntry.notes || ''}
-                    onChange={(e) =>
-                      setNewEntry({ ...newEntry, notes: e.target.value })
-                    }
-                    placeholder="Notes..."
-                    className="h-8"
-                  />
-                </td>
-                <td className="p-3">
-                  <Select
-                    value={newEntry.type as string}
-                    onValueChange={(value) => setNewEntry({ ...newEntry, type: value as WordType })}
-                  >
-                    <SelectTrigger className="h-8">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(WordType).map((type) => (
-                        <SelectItem key={type} value={type}>{formatEnumValue(type)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="p-3">
-                  <Select
-                    value={newEntry.difficulty as string}
-                    onValueChange={(value) => setNewEntry({ ...newEntry, difficulty: value as DifficultyLevel })}
-                  >
-                    <SelectTrigger className="h-8">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(DifficultyLevel).map((level) => (
-                        <SelectItem key={level} value={level}>{formatEnumValue(level)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="p-3">
-                  <Select
-                    value={newEntry.status}
-                    onValueChange={(value) => setNewEntry({ ...newEntry, status: value as StudyStatus })}
-                  >
-                    <SelectTrigger className="h-8">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(StudyStatus).map((status) => (
-                        <SelectItem key={status} value={status}>{formatEnumValue(status)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td className="p-3">
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={handleAddNewEntry}>
-                      Save
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      className="h-8 w-20 whitespace-nowrap text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                      onClick={handleAiFill}
+                      disabled={isAiLoading}
+                    >
+                      {isAiLoading ? <Sparkles className="h-4 w-4 animate-pulse" /> : 'AI Save'}
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => setShowNewRow(false)}>
                       Cancel
