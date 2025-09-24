@@ -31,50 +31,66 @@ export class AiService {
   }
 
   private parseMarkdownTable(markdown: string): Partial<VocabularyEntry>[] {
-    const lines = markdown.trim().split('\n');
-    if (lines.length < 3) {
+    const rawLines = markdown.trim().split('\n');
+    if (rawLines.length < 3) {
       return [];
     }
 
-    const headers = lines[0]
+    const headers = rawLines[0]
       .split('|')
       .map((h) => h.trim().toLowerCase())
       .filter(Boolean);
-    const rows = lines.slice(2);
+
+    // Re-join multi-line cells before splitting into rows
+    const processedRows: string[] = [];
+    let currentRow = '';
+    for (const line of rawLines.slice(2)) {
+      if (line.startsWith('|') && currentRow) {
+        processedRows.push(currentRow);
+        currentRow = line;
+      } else {
+        // Append multi-line content to the current row, separated by a newline
+        currentRow += (currentRow ? '\n' : '') + line;
+      }
+    }
+    if (currentRow) {
+      processedRows.push(currentRow);
+    }
 
     const entries: Partial<VocabularyEntry>[] = [];
 
-    for (const row of rows) {
+    for (const row of processedRows) {
       const values = row.split('|').map((v) => v.trim());
-      // The first and last elements will be empty strings from the outer pipes
       const rowValues = values.slice(1, -1);
 
       const entry: Partial<VocabularyEntry> = {
         status: StudyStatus.NEW,
         difficulty: DifficultyLevel.BEGINNER,
+        type: WordType.OTHER,
       };
 
       headers.forEach((header, index) => {
         const key = header.replace(/ /g, '').toLowerCase();
         const value = rowValues[index];
-        if (key === 'examplesentence') {
-          entry['exampleSentence'] = value;
-        } else if (Object.values(WordType).includes(value as WordType)) {
-          entry['type'] = value as WordType;
-        } else if (
-          key in entry ||
-          key === 'word' ||
-          key === 'reading' ||
-          key === 'translation' ||
-          key === 'pronunciation' ||
-          key === 'notes'
-        ) {
+        // Map snake_case or camelCase headers to our camelCase properties
+        const propertyMap: { [key: string]: keyof VocabularyEntry } = {
+          word: 'word',
+          reading: 'reading',
+          translation: 'translation',
+          pronunciation: 'pronunciation',
+          examplesentence: 'exampleSentence',
+          type: 'type',
+          difficulty: 'difficulty',
+          notes: 'notes',
+        };
+        if (propertyMap[key]) {
           (entry as any)[key] = value;
         }
       });
       entries.push(entry);
     }
 
+    console.log(entries);
     return entries;
   }
 }

@@ -21,6 +21,7 @@ export enum WordType {
   INTERJECTION = 'interjection',
   COUNTER = 'counter',
   EXPRESSION = 'expression',
+  OTHER = 'other',
 }
 
 export interface VocabularyEntry {
