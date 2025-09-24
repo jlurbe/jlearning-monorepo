@@ -49,6 +49,11 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
     notes: "",
   })
 
+  // Helper to format enum values for display (e.g., 'not_learned' -> 'Not Learned')
+  const formatEnumValue = (value: string) => {
+    return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  };
+
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch =
       entry.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -184,15 +189,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="noun">Noun</SelectItem>
-              <SelectItem value="verb">Verb</SelectItem>
-              <SelectItem value="adjective">Adjective</SelectItem>
-              <SelectItem value="adverb">Adverb</SelectItem>
-              <SelectItem value="particle">Particle</SelectItem>
-              <SelectItem value="conjunction">Conjunction</SelectItem>
-              <SelectItem value="interjection">Interjection</SelectItem>
-              <SelectItem value="counter">Counter</SelectItem>
-              <SelectItem value="expression">Expression</SelectItem>
+              {Object.values(WordType).map((type) => (
+                <SelectItem key={type} value={type}>{formatEnumValue(type)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         )
@@ -205,9 +204,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="beginner">Beginner</SelectItem>
-              <SelectItem value="intermediate">Intermediate</SelectItem>
-              <SelectItem value="advanced">Advanced</SelectItem>
+              {Object.values(DifficultyLevel).map((level) => (
+                <SelectItem key={level} value={level}>{formatEnumValue(level)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         )
@@ -220,10 +219,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={StudyStatus.NOT_LEARNED}>Not Learned</SelectItem>
-              <SelectItem value={StudyStatus.LEARNING}>Learning</SelectItem>
-              <SelectItem value={StudyStatus.REVIEWING}>Reviewing</SelectItem>
-              <SelectItem value={StudyStatus.MASTERED}>Mastered</SelectItem>
+              {Object.values(StudyStatus).map((status) => (
+                <SelectItem key={status} value={status}>{formatEnumValue(status)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
         )
@@ -234,15 +232,15 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
     let badgeColor = ""
     let displayValue = String(value)
 
-    if (field === "status") {
+    if (field === "status" && value) {
       badgeColor = getStatusColor(value as StudyStatus)
-      displayValue = value.charAt(0).toUpperCase() + value.slice(1)
-    } else if (field === "difficulty") {
+      displayValue = formatEnumValue(value)
+    } else if (field === "difficulty" && value) {
       badgeColor = getDifficultyColor(value)
-      displayValue = value.charAt(0).toUpperCase() + value.slice(1)
-    } else if (field === "type") {
+      displayValue = formatEnumValue(value)
+    } else if (field === "type" && value) {
       badgeColor = getTypeColor(value as WordType)
-      displayValue = value.charAt(0).toUpperCase() + value.slice(1)
+      displayValue = formatEnumValue(value)
     }
 
     return (
@@ -384,10 +382,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value={StudyStatus.NOT_LEARNED}>Not Learned</SelectItem>
-            <SelectItem value={StudyStatus.LEARNING}>Learning</SelectItem>
-            <SelectItem value={StudyStatus.REVIEWING}>Reviewing</SelectItem>
-            <SelectItem value={StudyStatus.MASTERED}>Mastered</SelectItem>
+            {Object.values(StudyStatus).map((status) => (
+              <SelectItem key={status} value={status}>{formatEnumValue(status)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -470,15 +467,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={WordType.NOUN}>Noun</SelectItem>
-                      <SelectItem value={WordType.VERB}>Verb</SelectItem>
-                      <SelectItem value={WordType.ADJECTIVE}>Adjective</SelectItem>
-                      <SelectItem value={WordType.ADVERB}>Adverb</SelectItem>
-                      <SelectItem value={WordType.PARTICLE}>Particle</SelectItem>
-                      <SelectItem value={WordType.CONJUNCTION}>Conjunction</SelectItem>
-                      <SelectItem value={WordType.INTERJECTION}>Interjection</SelectItem>
-                      <SelectItem value={WordType.COUNTER}>Counter</SelectItem>
-                      <SelectItem value={WordType.EXPRESSION}>Expression</SelectItem>
+                      {Object.values(WordType).map((type) => (
+                        <SelectItem key={type} value={type}>{formatEnumValue(type)}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </td>
@@ -491,9 +482,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={DifficultyLevel.BEGINNER}>Beginner</SelectItem>
-                      <SelectItem value={DifficultyLevel.INTERMEDIATE}>Intermediate</SelectItem>
-                      <SelectItem value={DifficultyLevel.ADVANCED}>Advanced</SelectItem>
+                      {Object.values(DifficultyLevel).map((level) => (
+                        <SelectItem key={level} value={level}>{formatEnumValue(level)}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </td>
@@ -506,10 +497,9 @@ export function VocabularyTable({ entries, onUpdate, onDelete, onAdd }: Vocabula
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={StudyStatus.NOT_LEARNED}>Not Learned</SelectItem>
-                      <SelectItem value={StudyStatus.LEARNING}>Learning</SelectItem>
-                      <SelectItem value={StudyStatus.REVIEWING}>Reviewing</SelectItem>
-                      <SelectItem value={StudyStatus.MASTERED}>Mastered</SelectItem>
+                      {Object.values(StudyStatus).map((status) => (
+                        <SelectItem key={status} value={status}>{formatEnumValue(status)}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </td>
