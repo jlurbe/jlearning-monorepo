@@ -25,8 +25,6 @@ export class AiService {
       )}`,
     });
 
-    console.log(aiResponse.text);
-
     return this.parseMarkdownTable(aiResponse.text);
   }
 
@@ -65,32 +63,34 @@ export class AiService {
 
       const entry: Partial<VocabularyEntry> = {
         status: StudyStatus.NEW,
-        difficulty: DifficultyLevel.BEGINNER,
-        type: WordType.OTHER,
       };
 
       headers.forEach((header, index) => {
-        const key = header.replace(/ /g, '').toLowerCase();
+        // This correctly converts a header like "Example Sentence" to "exampleSentence"
+        const key = header
+          .toLowerCase()
+          .replace(/ (\w)/g, (_, c) => c.toUpperCase());
         const value = rowValues[index];
-        // Map snake_case or camelCase headers to our camelCase properties
-        const propertyMap: { [key: string]: keyof VocabularyEntry } = {
-          word: 'word',
-          reading: 'reading',
-          translation: 'translation',
-          pronunciation: 'pronunciation',
-          examplesentence: 'exampleSentence',
-          type: 'type',
-          difficulty: 'difficulty',
-          notes: 'notes',
-        };
-        if (propertyMap[key]) {
+
+        // A simple check to see if the generated key is a valid property of our entry
+        const validKeys: Array<keyof VocabularyEntry> = [
+          'word',
+          'reading',
+          'translation',
+          'pronunciation',
+          'exampleSentence',
+          'type',
+          'difficulty',
+          'notes',
+          'status',
+        ];
+        if (validKeys.includes(key as keyof VocabularyEntry)) {
           (entry as any)[key] = value;
         }
       });
       entries.push(entry);
     }
 
-    console.log(entries);
     return entries;
   }
 }
