@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
-  DifficultyLevel,
   StudyStatus,
   VocabularyEntry,
-  WordType,
 } from '@jlearning-monorepo/api-common/shared/vocabulary';
 import { GoogleGenAI } from '@google/genai';
 import { GET_VOCABULARY_PROMPT } from '../consts/prompt';
@@ -24,6 +22,8 @@ export class AiService {
         text
       )}`,
     });
+
+    Logger.log(aiResponse.text);
 
     return this.parseMarkdownTable(aiResponse.text);
   }
