@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { JapaneseWordEntity } from './entities/japanese-word.entity';
+import { JapaneseWordEntity } from '@jlearning-monorepo/api-common/contexts/japanese-words/infrastructure/entities/japanese-word.entity';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'sqlite',

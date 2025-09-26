@@ -9,7 +9,7 @@ const apiClient = axios.create({
 });
 
 export const getWords = async (): Promise<VocabularyEntry[]> => {
-  const response = await apiClient.get('/words');
+  const response = await apiClient.get('/japanese-words');
   // The API returns 'id' as a number, but the frontend might expect a string.
   // Also, the API uses createdAt/updatedAt, but the component might not.
   // The backend now returns UUIDs as strings, so no explicit conversion is needed.
@@ -19,14 +19,14 @@ export const getWords = async (): Promise<VocabularyEntry[]> => {
 export const analyzeText = async (
   text: string
 ): Promise<Partial<VocabularyEntry>[]> => {
-  const response = await apiClient.post('/words/analyze', { text });
+  const response = await apiClient.post('/japanese-words/analyze', { text });
   return response.data;
 };
 
 export const addWord = async (
   entry: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<VocabularyEntry> => {
-  const response = await apiClient.post('/words', entry);
+  const response = await apiClient.post('/japanese-words', entry);
   return {
     ...response.data,
   };
@@ -35,7 +35,9 @@ export const addWord = async (
 export const addManyWords = async (
   entries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
 ): Promise<{ created: number }> => {
-  const response = await apiClient.post('/words/batch', { words: entries });
+  const response = await apiClient.post('/japanese-words/batch', {
+    words: entries,
+  });
   return response.data;
 };
 
@@ -43,10 +45,10 @@ export const updateWord = async (
   id: string,
   updates: Partial<VocabularyEntry>
 ): Promise<VocabularyEntry> => {
-  const response = await apiClient.patch(`/words/${id}`, updates);
+  const response = await apiClient.patch(`/japanese-words/${id}`, updates);
   return response.data;
 };
 
 export const deleteWord = async (id: string): Promise<void> => {
-  await apiClient.delete(`/words/${id}`);
+  await apiClient.delete(`/japanese-words/${id}`);
 };

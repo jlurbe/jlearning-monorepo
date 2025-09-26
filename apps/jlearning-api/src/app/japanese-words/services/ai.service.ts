@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
   StudyStatus,
-  VocabularyEntry,
-} from '@jlearning-monorepo/api-common/shared/vocabulary';
+  JapaneseWord,
+} from '@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type';
 import { GoogleGenAI } from '@google/genai';
 import { GET_VOCABULARY_PROMPT } from '../consts/prompt';
 
@@ -10,9 +10,7 @@ import { GET_VOCABULARY_PROMPT } from '../consts/prompt';
 export class AiService {
   // In a real application, this would make an API call to an external AI service.
   // For this example, we'll simulate the AI's response.
-  async getVocabularyFromText(
-    text: string
-  ): Promise<Partial<VocabularyEntry>[]> {
+  async getVocabularyFromText(text: string): Promise<Partial<JapaneseWord>[]> {
     const ai = new GoogleGenAI({});
 
     const aiResponse = await ai.models.generateContent({
@@ -28,7 +26,7 @@ export class AiService {
     return this.parseMarkdownTable(aiResponse.text);
   }
 
-  private parseMarkdownTable(markdown: string): Partial<VocabularyEntry>[] {
+  private parseMarkdownTable(markdown: string): Partial<JapaneseWord>[] {
     const rawLines = markdown.trim().split('\n');
     if (rawLines.length < 3) {
       return [];
@@ -55,13 +53,13 @@ export class AiService {
       processedRows.push(currentRow);
     }
 
-    const entries: Partial<VocabularyEntry>[] = [];
+    const entries: Partial<JapaneseWord>[] = [];
 
     for (const row of processedRows) {
       const values = row.split('|').map((v) => v.trim());
       const rowValues = values.slice(1, -1);
 
-      const entry: Partial<VocabularyEntry> = {
+      const entry: Partial<JapaneseWord> = {
         status: StudyStatus.NEW,
       };
 
@@ -73,7 +71,7 @@ export class AiService {
         const value = rowValues[index];
 
         // A simple check to see if the generated key is a valid property of our entry
-        const validKeys: Array<keyof VocabularyEntry> = [
+        const validKeys: Array<keyof JapaneseWord> = [
           'word',
           'reading',
           'translation',
@@ -84,8 +82,8 @@ export class AiService {
           'notes',
           'status',
         ];
-        if (validKeys.includes(key as keyof VocabularyEntry)) {
-          (entry as any)[key] = value;
+        if (validKeys.includes(key as keyof JapaneseWord)) {
+          (entry as unknown)[key] = value;
         }
       });
       entries.push(entry);

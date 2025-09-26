@@ -1,68 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, InsertResult, Repository } from 'typeorm';
-import { JapaneseWordEntity } from '../entities/japanese-word.entity';
-import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
+import { DeleteResult, InsertResult } from 'typeorm';
+import { JapaneseWordEntity } from '@jlearning-monorepo/api-common/contexts/japanese-words/infrastructure/entities/japanese-word.entity';
+import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
+import { JapaneseWordsRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
 
 @Injectable()
 export class JapaneseWordsService {
   constructor(
-    @InjectRepository(JapaneseWordEntity)
-    private readonly japaneseWordRepository: Repository<JapaneseWordEntity>
+    private readonly japaneseWordRepository: JapaneseWordsRepository
   ) {}
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto
   ): Promise<JapaneseWordEntity> {
-    const newWord = this.japaneseWordRepository.create(wordData);
-    return this.japaneseWordRepository.save(newWord);
+    return this.japaneseWordRepository.createJapaneseWord(wordData);
   }
 
   async createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
   ): Promise<InsertResult> {
-    // Using the query builder allows us to specify an `orIgnore` instruction.
-    // This tells the database (SQLite in this case) to simply skip inserting
-    // a row if it would violate a UNIQUE constraint (like on our 'word' column).
-    // This is highly efficient for bulk inserts where duplicates might exist.
-    return this.japaneseWordRepository
-      .createQueryBuilder()
-      .insert()
-      .into(JapaneseWordEntity)
-      .values(wordsData)
-      .orIgnore()
-      .execute();
+    return this.japaneseWordRepository.createManyJapaneseWords(wordsData);
   }
 
   async getAllJapaneseWords(): Promise<JapaneseWordEntity[]> {
-    return this.japaneseWordRepository.find();
+    return this.japaneseWordRepository.getAllJapaneseWords();
   }
 
   async getJapaneseWordById(id: string): Promise<JapaneseWordEntity | null> {
-    return this.japaneseWordRepository.findOne({
-      where: { id },
-    });
+    return this.japaneseWordRepository.getJapaneseWordById(id);
   }
 
   async getJapaneseWordByWord(
     word: string
   ): Promise<JapaneseWordEntity | null> {
-    return this.japaneseWordRepository.findOne({
-      where: { word },
-    });
+    return this.japaneseWordRepository.getJapaneseWordByWord(word);
   }
 
   async updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWordEntity> // This `id` parameter will be updated in the controller
+    updates: Partial<JapaneseWordEntity>
   ): Promise<JapaneseWordEntity | null> {
-    const word = await this.japaneseWordRepository.findOneBy({ id });
-    if (!word) return null;
-    Object.assign(word, updates);
-    return this.japaneseWordRepository.save(word);
+    return this.japaneseWordRepository.updateJapaneseWord(id, updates);
   }
 
   async deleteJapaneseWord(id: string): Promise<DeleteResult> {
-    return this.japaneseWordRepository.delete(id);
+    return this.japaneseWordRepository.deleteJapaneseWord(id);
   }
 }

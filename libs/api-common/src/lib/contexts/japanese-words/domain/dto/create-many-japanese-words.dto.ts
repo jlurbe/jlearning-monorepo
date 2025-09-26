@@ -6,5 +6,5 @@ export class CreateManyJapaneseWordsDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateJapaneseWordDto)
-  words: CreateJapaneseWordDto[];
+  words!: CreateJapaneseWordDto[];
 }

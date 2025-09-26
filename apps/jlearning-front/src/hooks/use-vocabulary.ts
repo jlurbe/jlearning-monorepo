@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  type VocabularyEntry,
+  type JapaneseWord,
   DifficultyLevel,
   StudyStatus,
   WordType,
-} from '@jlearning-monorepo/api-common/shared/vocabulary';
+} from '@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type';
 import * as api from '../services/api';
 
 export function useVocabulary() {
-  const [entries, setEntries] = useState<VocabularyEntry[]>([]);
+  const [entries, setEntries] = useState<JapaneseWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +31,7 @@ export function useVocabulary() {
   }, [fetchWords]);
 
   const addEntry = async (
-    newEntry: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>
+    newEntry: Omit<JapaneseWord, 'id' | 'createdAt' | 'updatedAt'>
   ) => {
     try {
       const addedEntry = await api.addWord(newEntry);
@@ -43,7 +43,7 @@ export function useVocabulary() {
   };
 
   const addMultipleEntries = async (
-    newEntries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
+    newEntries: Omit<JapaneseWord, 'id' | 'createdAt' | 'updatedAt'>[]
   ) => {
     try {
       // Use the new, efficient batch endpoint
@@ -54,7 +54,7 @@ export function useVocabulary() {
       console.error('Failed to add multiple words:', err);
     }
   };
-  const updateEntry = async (id: string, updates: Partial<VocabularyEntry>) => {
+  const updateEntry = async (id: string, updates: Partial<JapaneseWord>) => {
     try {
       const updatedEntry = await api.updateWord(id, updates);
       setEntries((prev) => prev.map((e) => (e.id === id ? updatedEntry : e)));

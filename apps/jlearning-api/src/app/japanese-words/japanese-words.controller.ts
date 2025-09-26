@@ -12,10 +12,10 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { JapaneseWordsService } from './services/japanese-words.service';
-import { CreateJapaneseWordDto } from './dto/create-japanese-word.dto';
-import { CreateManyJapaneseWordsDto } from './dto/create-many-japanese-words.dto';
-import { AnalyzeTextDto } from './dto/analyze-text.dto';
-import { UpdateJapaneseWordDto } from './dto/update-japanese-word.dto';
+import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
+import { CreateManyJapaneseWordsDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-many-japanese-words.dto';
+import { AnalyzeTextDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/analyze-text.dto';
+import { UpdateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/update-japanese-word.dto';
 import { AiService } from './services/ai.service';
 
 @Controller('japanese-words')

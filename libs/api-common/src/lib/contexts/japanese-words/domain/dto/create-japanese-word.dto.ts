@@ -7,15 +7,15 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
-  WordType,
-  StudyStatus,
   DifficultyLevel,
-} from '@jlearning-monorepo/api-common/shared/vocabulary';
+  StudyStatus,
+  WordType,
+} from '../../../shared/domain/japanese-word.type';
 
 export class CreateJapaneseWordDto {
   @IsString()
   @IsNotEmpty()
-  word: string;
+  word?: string;
 
   @IsString()
   @IsOptional()

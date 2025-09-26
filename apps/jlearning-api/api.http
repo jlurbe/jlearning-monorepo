@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:3000/api
 
 ### Create a new Japanese word with example sentences
-POST {{baseUrl}}/words
+POST {{baseUrl}}/japanese-words
 Content-Type: application/json
 
 {
@@ -17,15 +17,15 @@ Content-Type: application/json
 }
 
 ### Get all Japanese words
-GET {{baseUrl}}/words
+GET {{baseUrl}}/japanese-words
 
 ### Get a single Japanese word by ID
 # @prompt wordId
-GET {{baseUrl}}/words/{{wordId}}
+GET {{baseUrl}}/japanese-words/{{wordId}}
 
 ### Update a Japanese word
 # @prompt wordId
-PATCH {{baseUrl}}/words/{{wordId}}
+PATCH {{baseUrl}}/japanese-words/{{wordId}}
 Content-Type: application/json
 
 {
@@ -35,4 +35,4 @@ Content-Type: application/json
 
 ### Delete a Japanese word
 # @prompt wordId
-DELETE {{baseUrl}}/words/{{wordId}}
+DELETE {{baseUrl}}/japanese-words/{{wordId}}

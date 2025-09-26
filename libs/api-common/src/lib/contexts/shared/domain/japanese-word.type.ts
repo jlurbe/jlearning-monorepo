@@ -24,22 +24,23 @@ export enum WordType {
   OTHER = 'other',
 }
 
-export interface VocabularyEntry {
+export interface JapaneseWord {
   id: string;
   word: string;
-  reading: string;
-  translation: string;
-  pronunciation: string;
-  exampleSentence: string;
-  type: WordType;
-  difficulty: DifficultyLevel;
-  status: StudyStatus;
-  notes: string;
+  reading: string | null;
+  translation: string | null;
+  pronunciation: string | null;
+  exampleSentence: string | null;
+  type: WordType | null;
+  difficulty: DifficultyLevel | null;
+  status: StudyStatus | null;
+  notes: string | null;
+  reviewedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface VocabularyStats {
+export interface JapaneseWordsStats {
   total: number;
   byStatus: Record<StudyStatus, number>;
   byType: Record<WordType, number>;

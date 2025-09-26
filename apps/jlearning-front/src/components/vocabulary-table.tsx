@@ -9,23 +9,23 @@ import { Badge } from "./ui/badge"
 import { Trash2, Search, Filter, Plus, Sparkles } from 'lucide-react';
 import * as api from '../services/api';
 import {
-  type VocabularyEntry,
+  type JapaneseWord,
   WordType,
   StudyStatus,
   DifficultyLevel,
-} from "@jlearning-monorepo/api-common/shared/vocabulary"
+} from "@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type"
 
 interface VocabularyTableProps {
-  entries: VocabularyEntry[]
-  onUpdate: (id: string, updates: Partial<VocabularyEntry>) => void
+  entries: JapaneseWord[]
+  onUpdate: (id: string, updates: Partial<JapaneseWord>) => void
   onDelete: (id: string) => void
-  onAdd: (entry: Omit<VocabularyEntry, "id" | "createdAt" | "updatedAt">) => void
-  onAddMultiple: (entries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
+  onAdd: (entry: Omit<JapaneseWord, "id" | "createdAt" | "updatedAt">) => void
+  onAddMultiple: (entries: Omit<JapaneseWord, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
 }
 
 interface EditingCell {
   rowId: string
-  field: keyof VocabularyEntry
+  field: keyof JapaneseWord
 }
 
 export function VocabularyTable({
@@ -45,7 +45,7 @@ export function VocabularyTable({
 
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [showNewRow, setShowNewRow] = useState(false)
-  const [newEntry, setNewEntry] = useState<Omit<VocabularyEntry, "id" | "createdAt" | "updatedAt">>({
+  const [newEntry, setNewEntry] = useState<Omit<JapaneseWord, "id" | "createdAt" | "updatedAt">>({
     word: "",
     reading: "",
     translation: "",
@@ -55,6 +55,7 @@ export function VocabularyTable({
     difficulty: DifficultyLevel.BEGINNER,
     status: StudyStatus.NEW,
     notes: "",
+    reviewedAt: null,
   })
 
   // Helper to format enum values for display (e.g., 'NEW' -> 'Not Learned')
@@ -65,9 +66,9 @@ export function VocabularyTable({
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch =
       entry.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.reading.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.translation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.pronunciation.toLowerCase().includes(searchTerm.toLowerCase())
+      entry.reading?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      entry.translation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      entry.pronunciation?.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesType = filterType === "all" || entry.type === filterType
     const matchesStatus = filterStatus === "all" || entry.status === filterStatus
@@ -115,7 +116,7 @@ export function VocabularyTable({
 
     if (columns.length === 1) return
 
-    const fieldOrder: (keyof VocabularyEntry)[] = [
+    const fieldOrder: (keyof JapaneseWord)[] = [
       "word",
       "reading",
       "translation",
@@ -124,7 +125,7 @@ export function VocabularyTable({
       "notes",
     ]
 
-    const updates: Partial<VocabularyEntry> = {}
+    const updates: Partial<JapaneseWord> = {}
     columns.forEach((value, index) => {
       if (index < fieldOrder.length) {
         const field = fieldOrder[index]
@@ -135,7 +136,7 @@ export function VocabularyTable({
     onUpdate(rowId, updates)
   }
 
-  const handleCellClick = (rowId: string, field: keyof VocabularyEntry, currentValue: any) => {
+  const handleCellClick = (rowId: string, field: keyof JapaneseWord, currentValue: any) => {
     if (field === "createdAt" || field === "updatedAt" || field === "id") return
     setEditingCell({ rowId, field })
     setEditValue(String(currentValue))
@@ -155,7 +156,7 @@ export function VocabularyTable({
     setEditingCell(null)
   }
 
-  const handleDropdownChange = (value: string, rowId: string, field: keyof VocabularyEntry) => {
+  const handleDropdownChange = (value: string, rowId: string, field: keyof JapaneseWord) => {
     onUpdate(rowId, { [field]: value as any })
     setEditingCell(null)
   }
@@ -192,11 +193,14 @@ export function VocabularyTable({
           exampleSentence: result.exampleSentence || '',
           type: result.type || WordType.NOUN,
           difficulty: result.difficulty || DifficultyLevel.BEGINNER,
-          status: result.status || StudyStatus.NEW, notes: result.notes || '' }));
+          status: result.status || StudyStatus.NEW,
+          notes: result.notes || '',
+          reviewedAt: null
+        }));
         onAddMultiple(formattedResults);
         // Clear the input and hide the new row form
         setShowNewRow(false);
-        setNewEntry({ word: '', reading: '', translation: '', pronunciation: '', exampleSentence: '', type: WordType.NOUN, difficulty: DifficultyLevel.BEGINNER, status: StudyStatus.NEW, notes: '' });
+        setNewEntry({ word: '', reading: '', translation: '', pronunciation: '', exampleSentence: '', type: WordType.NOUN, difficulty: DifficultyLevel.BEGINNER, status: StudyStatus.NEW, notes: '', reviewedAt: null });
       }
     } catch (error) {
       console.error('AI analysis failed:', error);
@@ -205,7 +209,7 @@ export function VocabularyTable({
       setIsAiLoading(false);
     }
   };
-  const renderBadgeCell = (entry: VocabularyEntry, field: keyof VocabularyEntry, value: any) => {
+  const renderBadgeCell = (entry: JapaneseWord, field: keyof JapaneseWord, value: any) => {
     const isEditing = editingCell?.rowId === entry.id && editingCell?.field === field
 
     if (isEditing) {
@@ -265,7 +269,7 @@ export function VocabularyTable({
     )
   }
 
-  const renderEditableCell = (entry: VocabularyEntry, field: keyof VocabularyEntry, value: any) => {
+  const renderEditableCell = (entry: JapaneseWord, field: keyof JapaneseWord, value: any) => {
     const isEditing = editingCell?.rowId === entry.id && editingCell?.field === field
 
     if (isEditing) {
@@ -344,7 +348,9 @@ export function VocabularyTable({
     }
   }
 
-  const uniqueTypes = [...new Set(entries.map((e) => e.type))].filter(Boolean)
+  const uniqueTypes = [...new Set(entries.map((e) => e.type))].filter(
+    (t): t is WordType => Boolean(t)
+  )
 
   if (entries.length === 0 && !showNewRow) {
     return (
