@@ -58,6 +58,10 @@ export function VocabularyTable({
     reviewedAt: null,
   })
 
+  // Pagination state
+  const [pageSize, setPageSize] = useState<number>(25)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+
   // Helper to format enum values for display (e.g., 'NEW' -> 'Not Learned')
   const formatEnumValue = (value: string) => {
     return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
@@ -75,6 +79,18 @@ export function VocabularyTable({
 
     return matchesSearch && matchesType && matchesStatus
   })
+
+  // Reset to first page when filters/search/page size change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, filterType, filterStatus, pageSize])
+
+  // Compute pagination
+  const totalPages = Math.max(1, Math.ceil(filteredEntries.length / pageSize))
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages)
+  const startIndex = (safeCurrentPage - 1) * pageSize
+  const endIndex = Math.min(startIndex + pageSize, filteredEntries.length)
+  const paginatedEntries = filteredEntries.slice(startIndex, endIndex)
 
   useEffect(() => {
     if (editingCell && inputRef.current) {
@@ -425,7 +441,7 @@ export function VocabularyTable({
 
   return (
     <div className="space-y-4 p-6">
-      {/* Filters and Add Button */}
+      {/* Filters, Page Size and Add Button */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -464,6 +480,18 @@ export function VocabularyTable({
           </SelectContent>
         </Select>
 
+        {/* Page size selector */}
+        <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+          <SelectTrigger className="w-full sm:w-32">
+            <SelectValue placeholder="Page size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="25">25 / page</SelectItem>
+            <SelectItem value="50">50 / page</SelectItem>
+            <SelectItem value="100">100 / page</SelectItem>
+          </SelectContent>
+        </Select>
+
         <Button variant="outline" onClick={handleClearFilters} className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
           Clear Filters
@@ -477,7 +505,7 @@ export function VocabularyTable({
 
       {/* Results count */}
       <p className="text-sm text-muted-foreground">
-        Showing {filteredEntries.length} of {entries.length} entries
+        Showing {filteredEntries.length === 0 ? 0 : startIndex + 1}-{endIndex} of {filteredEntries.length} filtered entries ({entries.length} total)
       </p>
 
       {/* Table */}
@@ -529,7 +557,7 @@ export function VocabularyTable({
               </tr>
             )}
 
-            {filteredEntries.map((entry, index) => (
+            {paginatedEntries.map((entry, index) => (
               <tr
                 key={entry.id}
                 data-row-id={entry.id}
@@ -580,6 +608,33 @@ export function VocabularyTable({
       {filteredEntries.length === 0 && searchTerm && (
         <div className="text-center py-8">
           <p className="text-muted-foreground">No entries match your search criteria.</p>
+        </div>
+      )}
+
+      {/* Pagination controls */}
+      {filteredEntries.length > 0 && (
+        <div className="flex items-center justify-between gap-4 pt-2">
+          <div className="text-sm text-muted-foreground">
+            Page {safeCurrentPage} of {totalPages}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={safeCurrentPage <= 1}
+            >
+              Prev
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safeCurrentPage >= totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
     </div>
