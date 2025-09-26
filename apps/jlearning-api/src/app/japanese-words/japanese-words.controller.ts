@@ -11,17 +11,17 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JapaneseWordService } from './services/japanese-word.service';
+import { JapaneseWordsService } from './services/japanese-words.service';
 import { CreateJapaneseWordDto } from './dto/create-japanese-word.dto';
 import { CreateManyJapaneseWordsDto } from './dto/create-many-japanese-words.dto';
 import { AnalyzeTextDto } from './dto/analyze-text.dto';
 import { UpdateJapaneseWordDto } from './dto/update-japanese-word.dto';
 import { AiService } from './services/ai.service';
 
-@Controller('words')
-export class WordsController {
+@Controller('japanese-words')
+export class JapanesWordsController {
   constructor(
-    private readonly japaneseWordService: JapaneseWordService,
+    private readonly japaneseWordService: JapaneseWordsService,
     private readonly aiService: AiService
   ) {}
 

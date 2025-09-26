@@ -13,7 +13,7 @@ import {
 } from '@jlearning-monorepo/api-common/shared/vocabulary';
 
 @Entity('japanese_words')
-export class JapaneseWord implements VocabularyEntry {
+export class JapaneseWordEntity implements VocabularyEntry {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

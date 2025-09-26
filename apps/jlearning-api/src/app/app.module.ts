@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { WordsModule } from './words/words.module';
-import { dataSourceOptions } from './words/data-source';
+import { JapaneseWordsModule } from './japanese-words/japanese-words.module';
+import { dataSourceOptions } from './japanese-words/data-source';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(dataSourceOptions), WordsModule],
+  imports: [TypeOrmModule.forRoot(dataSourceOptions), JapaneseWordsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, InsertResult, Repository } from 'typeorm';
-import { JapaneseWord } from '../entities/japanese-word.entity';
+import { JapaneseWordEntity } from '../entities/japanese-word.entity';
 import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
 
 @Injectable()
-export class JapaneseWordService {
+export class JapaneseWordsService {
   constructor(
-    @InjectRepository(JapaneseWord)
-    private readonly japaneseWordRepository: Repository<JapaneseWord>
+    @InjectRepository(JapaneseWordEntity)
+    private readonly japaneseWordRepository: Repository<JapaneseWordEntity>
   ) {}
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWord> {
+  ): Promise<JapaneseWordEntity> {
     const newWord = this.japaneseWordRepository.create(wordData);
     return this.japaneseWordRepository.save(newWord);
   }
@@ -28,23 +28,25 @@ export class JapaneseWordService {
     return this.japaneseWordRepository
       .createQueryBuilder()
       .insert()
-      .into(JapaneseWord)
+      .into(JapaneseWordEntity)
       .values(wordsData)
       .orIgnore()
       .execute();
   }
 
-  async getAllJapaneseWords(): Promise<JapaneseWord[]> {
+  async getAllJapaneseWords(): Promise<JapaneseWordEntity[]> {
     return this.japaneseWordRepository.find();
   }
 
-  async getJapaneseWordById(id: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordById(id: string): Promise<JapaneseWordEntity | null> {
     return this.japaneseWordRepository.findOne({
       where: { id },
     });
   }
 
-  async getJapaneseWordByWord(word: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordByWord(
+    word: string
+  ): Promise<JapaneseWordEntity | null> {
     return this.japaneseWordRepository.findOne({
       where: { word },
     });
@@ -52,8 +54,8 @@ export class JapaneseWordService {
 
   async updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWord> // This `id` parameter will be updated in the controller
-  ): Promise<JapaneseWord | null> {
+    updates: Partial<JapaneseWordEntity> // This `id` parameter will be updated in the controller
+  ): Promise<JapaneseWordEntity | null> {
     const word = await this.japaneseWordRepository.findOneBy({ id });
     if (!word) return null;
     Object.assign(word, updates);
