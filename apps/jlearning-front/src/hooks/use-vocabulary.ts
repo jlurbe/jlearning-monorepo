@@ -12,9 +12,10 @@ export function useVocabulary() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchWords = useCallback(async () => {
+  const fetchWords = useCallback(async (opts?: { silent?: boolean }) => {
+    const silent = opts?.silent === true;
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const words = await api.getWords();
       setEntries(words);
       setError(null);
@@ -22,7 +23,7 @@ export function useVocabulary() {
       setError('Failed to fetch vocabulary. Please ensure the API is running.');
       console.error(err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, []);
 
@@ -48,8 +49,9 @@ export function useVocabulary() {
     try {
       // Use the new, efficient batch endpoint
       await api.addManyWords(newEntries);
-      // After a successful batch-add, refetch all words to get the updated list
-      await fetchWords();
+      // After a successful batch-add, refetch all words without toggling loading
+      // (keeps the table mounted so filter state is preserved)
+      await fetchWords({ silent: true });
     } catch (err) {
       console.error('Failed to add multiple words:', err);
     }
