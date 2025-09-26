@@ -109,6 +109,58 @@ export function VocabularyTable({
     return () => document.removeEventListener("paste", handleGlobalPaste)
   }, [])
 
+  // URL-only persistence for filters and search
+  useEffect(() => {
+    // Initialize from URL on mount
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get("q")
+    if (q !== null) setSearchTerm(q)
+
+    const typeParam = params.get("type")
+    if (typeParam && (typeParam === "all" || (Object.values(WordType) as string[]).includes(typeParam))) {
+      setFilterType(typeParam as WordType | "all")
+    }
+
+    const statusParam = params.get("status")
+    if (
+      statusParam &&
+      (statusParam === "all" || (Object.values(StudyStatus) as string[]).includes(statusParam))
+    ) {
+      setFilterStatus(statusParam as StudyStatus | "all")
+    }
+    // Note: We do not add a popstate listener here; app-level routing can handle that if needed
+  }, [])
+
+  useEffect(() => {
+    // Sync current filters to URL without reloading the page
+    const url = new URL(window.location.href)
+    const params = url.searchParams
+
+    // search term
+    if (searchTerm) {
+      params.set("q", searchTerm)
+    } else {
+      params.delete("q")
+    }
+
+    // type
+    if (filterType && filterType !== "all") {
+      params.set("type", String(filterType))
+    } else {
+      params.delete("type")
+    }
+
+    // status
+    if (filterStatus && filterStatus !== "all") {
+      params.set("status", String(filterStatus))
+    } else {
+      params.delete("status")
+    }
+
+    const newUrl = `${url.pathname}${params.toString() ? `?${params.toString()}` : ""}${url.hash}`
+    window.history.replaceState({}, "", newUrl)
+  }, [searchTerm, filterType, filterStatus])
+
   const handleMultiColumnPaste = (pastedData: string, rowId: string) => {
     const rows = pastedData.split("\n").filter((row) => row.trim())
     const firstRow = rows[0]
