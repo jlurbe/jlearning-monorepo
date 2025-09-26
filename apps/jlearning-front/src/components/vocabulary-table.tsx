@@ -228,6 +228,12 @@ export function VocabularyTable({
     }
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm("")
+    setFilterType("all")
+    setFilterStatus("all")
+  }
+
   const handleAiFill = async () => {
     if (!newEntry.word.trim()) return;
 
@@ -457,6 +463,11 @@ export function VocabularyTable({
             ))}
           </SelectContent>
         </Select>
+
+        <Button variant="outline" onClick={handleClearFilters} className="flex items-center gap-2">
+          <Filter className="h-4 w-4" />
+          Clear Filters
+        </Button>
 
         <Button onClick={() => setShowNewRow(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
