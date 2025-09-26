@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select"
@@ -99,6 +99,34 @@ export function VocabularyTable({
     }
   }, [editingCell])
 
+  const handleMultiColumnPaste = useCallback((pastedData: string, rowId: string) => {
+    const rows = pastedData.split("\n").filter((row) => row.trim())
+    const firstRow = rows[0]
+    const columns = firstRow.split("\t")
+
+    if (columns.length === 1) return
+
+    const fieldOrder = [
+      "word",
+      "reading",
+      "translation",
+      "pronunciation",
+      "exampleSentence",
+      "notes",
+    ] as const
+
+    type PasteField = typeof fieldOrder[number]
+    const updates: Partial<Pick<JapaneseWord, PasteField>> = {}
+    columns.forEach((value, index) => {
+      if (index < fieldOrder.length) {
+        const field = fieldOrder[index]
+        updates[field] = value.trim()
+      }
+    })
+
+    onUpdate(rowId, updates as Partial<JapaneseWord>)
+  }, [onUpdate])
+
   useEffect(() => {
     const handleGlobalPaste = (e: ClipboardEvent) => {
       // Only handle paste if we're not in an input field
@@ -123,7 +151,7 @@ export function VocabularyTable({
 
     document.addEventListener("paste", handleGlobalPaste)
     return () => document.removeEventListener("paste", handleGlobalPaste)
-  }, [])
+  }, [handleMultiColumnPaste])
 
   // URL-only persistence for filters and search
   useEffect(() => {
@@ -177,34 +205,9 @@ export function VocabularyTable({
     window.history.replaceState({}, "", newUrl)
   }, [searchTerm, filterType, filterStatus])
 
-  const handleMultiColumnPaste = (pastedData: string, rowId: string) => {
-    const rows = pastedData.split("\n").filter((row) => row.trim())
-    const firstRow = rows[0]
-    const columns = firstRow.split("\t")
+  
 
-    if (columns.length === 1) return
-
-    const fieldOrder: (keyof JapaneseWord)[] = [
-      "word",
-      "reading",
-      "translation",
-      "pronunciation",
-      "exampleSentence",
-      "notes",
-    ]
-
-    const updates: Partial<JapaneseWord> = {}
-    columns.forEach((value, index) => {
-      if (index < fieldOrder.length) {
-        const field = fieldOrder[index]
-        updates[field] = value.trim() as any
-      }
-    })
-
-    onUpdate(rowId, updates)
-  }
-
-  const handleCellClick = (rowId: string, field: keyof JapaneseWord, currentValue: any) => {
+  const handleCellClick = <K extends keyof JapaneseWord>(rowId: string, field: K, currentValue: JapaneseWord[K]) => {
     if (field === "createdAt" || field === "updatedAt" || field === "id") return
     setEditingCell({ rowId, field })
     setEditValue(String(currentValue))
@@ -213,19 +216,25 @@ export function VocabularyTable({
   const handleSaveEdit = () => {
     if (!editingCell) return
 
-    let processedValue: any = editValue
+    let processedValue: string | WordType | DifficultyLevel | StudyStatus = editValue
 
     // Type conversion based on field
     if (editingCell.field === "type" || editingCell.field === "difficulty" || editingCell.field === "status") {
       processedValue = editValue as WordType | DifficultyLevel | StudyStatus
     }
 
-    onUpdate(editingCell.rowId, { [editingCell.field]: processedValue })
+    onUpdate(editingCell.rowId, { [editingCell.field]: processedValue } as Partial<JapaneseWord>)
     setEditingCell(null)
   }
 
   const handleDropdownChange = (value: string, rowId: string, field: keyof JapaneseWord) => {
-    onUpdate(rowId, { [field]: value as any })
+    if (field === "type") {
+      onUpdate(rowId, { [field]: value as WordType } as Partial<JapaneseWord>)
+    } else if (field === "difficulty") {
+      onUpdate(rowId, { [field]: value as DifficultyLevel } as Partial<JapaneseWord>)
+    } else if (field === "status") {
+      onUpdate(rowId, { [field]: value as StudyStatus } as Partial<JapaneseWord>)
+    }
     setEditingCell(null)
   }
 
@@ -283,7 +292,7 @@ export function VocabularyTable({
       setIsAiLoading(false);
     }
   };
-  const renderBadgeCell = (entry: JapaneseWord, field: keyof JapaneseWord, value: any) => {
+  const renderBadgeCell = <K extends keyof JapaneseWord>(entry: JapaneseWord, field: K, value: JapaneseWord[K]) => {
     const isEditing = editingCell?.rowId === entry.id && editingCell?.field === field
 
     if (isEditing) {
@@ -324,13 +333,13 @@ export function VocabularyTable({
 
     if (field === "status" && value) {
       badgeColor = getStatusColor(value as StudyStatus)
-      displayValue = formatEnumValue(value)
+      displayValue = formatEnumValue(String(value))
     } else if (field === "difficulty" && value) {
-      badgeColor = getDifficultyColor(value)
-      displayValue = formatEnumValue(value)
+      badgeColor = getDifficultyColor(String(value))
+      displayValue = formatEnumValue(String(value))
     } else if (field === "type" && value) {
       badgeColor = getTypeColor(value as WordType)
-      displayValue = formatEnumValue(value)
+      displayValue = formatEnumValue(String(value))
     }
 
     return (
@@ -343,7 +352,7 @@ export function VocabularyTable({
     )
   }
 
-  const renderEditableCell = (entry: JapaneseWord, field: keyof JapaneseWord, value: any) => {
+  const renderEditableCell = <K extends keyof JapaneseWord>(entry: JapaneseWord, field: K, value: JapaneseWord[K]) => {
     const isEditing = editingCell?.rowId === entry.id && editingCell?.field === field
 
     if (isEditing) {
