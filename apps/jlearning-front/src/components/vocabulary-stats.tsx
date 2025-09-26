@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "./ui/card"
 import { BookOpen, BarChart3, TrendingUp, Target } from "lucide-react"
-import type { VocabularyStats as StatsType } from "@jlearning-monorepo/api-common/shared/vocabulary"
+import type { JapaneseWordsStats as StatsType } from "@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type"
 
 interface VocabularyStatsProps {
   stats: StatsType

@@ -5,15 +5,15 @@ import { VocabularyStats } from "./vocabulary-stats"
 import { BookOpen } from "lucide-react"
 import { useVocabulary } from "../hooks/use-vocabulary"
 import type {
-  VocabularyEntry,
-  VocabularyStats as StatsType,
-} from '@jlearning-monorepo/api-common/shared/vocabulary';
+  JapaneseWord,
+  JapaneseWordsStats as StatsType,
+} from '@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type';
 
 export function VocabularyManager() {
   const { entries, loading, addEntry, addMultipleEntries, updateEntry, deleteEntry, getStats } =
     useVocabulary();
 
-  const handleUpdateEntry = (id: string, updates: Partial<VocabularyEntry>) => {
+  const handleUpdateEntry = (id: string, updates: Partial<JapaneseWord>) => {
     updateEntry(id, updates)
   }
 
@@ -21,12 +21,12 @@ export function VocabularyManager() {
     deleteEntry(id)
   }
 
-  const handleAddEntry = (entry: Omit<VocabularyEntry, "id" | "createdAt" | "updatedAt">) => {
+  const handleAddEntry = (entry: Omit<JapaneseWord, "id" | "createdAt" | "updatedAt">) => {
     addEntry(entry)
   }
 
   const handleAddMultipleEntries = (
-    entries: Omit<VocabularyEntry, 'id' | 'createdAt' | 'updatedAt'>[]
+    entries: Omit<JapaneseWord, 'id' | 'createdAt' | 'updatedAt'>[]
   ) => {
     addMultipleEntries(entries);
   }
