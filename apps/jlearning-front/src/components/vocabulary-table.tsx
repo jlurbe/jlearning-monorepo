@@ -51,6 +51,10 @@ export function VocabularyTable({
   const inputRef = useRef<HTMLInputElement>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
+  // Sorting state
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
+
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [showNewRow, setShowNewRow] = useState(false);
   const [newEntry, setNewEntry] = useState<
@@ -79,6 +83,7 @@ export function VocabularyTable({
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
+  // 1. Filter
   const filteredEntries = entries.filter((entry) => {
     const matchesSearch =
       entry.word.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -93,17 +98,29 @@ export function VocabularyTable({
     return matchesSearch && matchesType && matchesStatus;
   });
 
+  // 2. Sort
+  const sortedEntries =
+    sortBy && sortOrder
+      ? [...filteredEntries].sort((a, b) => {
+          const aValue = (a as any)[sortBy] ?? '';
+          const bValue = (b as any)[sortBy] ?? '';
+          if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+          if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+          return 0;
+        })
+      : filteredEntries;
+
   // Reset to first page when filters/search/page size change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, filterType, filterStatus, pageSize]);
 
   // Compute pagination
-  const totalPages = Math.max(1, Math.ceil(filteredEntries.length / pageSize));
+  const totalPages = Math.max(1, Math.ceil(sortedEntries.length / pageSize));
   const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
   const startIndex = (safeCurrentPage - 1) * pageSize;
-  const endIndex = Math.min(startIndex + pageSize, filteredEntries.length);
-  const paginatedEntries = filteredEntries.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + pageSize, sortedEntries.length);
+  const paginatedEntries = sortedEntries.slice(startIndex, endIndex);
 
   useEffect(() => {
     if (editingCell && inputRef.current) {
@@ -659,12 +676,41 @@ export function VocabularyTable({
         <table ref={tableRef} className="w-full border-collapse">
           <thead>
             <tr className="border-b">
-              <th className="text-left p-3 font-semibold">Word</th>
-              <th className="text-left p-3 font-semibold">Reading</th>
-              <th className="text-left p-3 font-semibold">Translation</th>
-              <th className="text-left p-3 font-semibold">Pronunciation</th>
-              <th className="text-left p-3 font-semibold">Example</th>
-              <th className="text-left p-3 font-semibold">Notes</th>
+              {[
+                { key: 'word', label: 'Word' },
+                { key: 'reading', label: 'Reading' },
+                { key: 'translation', label: 'Translation' },
+                { key: 'pronunciation', label: 'Pronunciation' },
+                { key: 'exampleSentence', label: 'Example' },
+                { key: 'notes', label: 'Notes' },
+              ].map((col) => (
+                <th
+                  key={col.key}
+                  className="text-left p-3 font-semibold cursor-pointer select-none hover:underline"
+                  onClick={() => {
+                    if (sortBy !== col.key) {
+                      setSortBy(col.key);
+                      setSortOrder('asc');
+                    } else if (sortOrder === 'asc') {
+                      setSortOrder('desc');
+                    } else if (sortOrder === 'desc') {
+                      setSortBy(null);
+                      setSortOrder(null);
+                    } else {
+                      setSortOrder('asc');
+                    }
+                  }}
+                >
+                  {col.label}
+                  {sortBy === col.key && (
+                    <span className="ml-1">
+                      {sortOrder === 'asc' && '▲'}
+                      {sortOrder === 'desc' && '▼'}
+                      {sortOrder === null && '⨯'}
+                    </span>
+                  )}
+                </th>
+              ))}
               <th className="text-left p-3 font-semibold">Type</th>
               <th className="text-left p-3 font-semibold">Difficulty</th>
               <th className="text-left p-3 font-semibold">Status</th>
