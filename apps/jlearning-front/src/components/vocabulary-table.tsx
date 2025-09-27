@@ -710,11 +710,65 @@ export function VocabularyTable({
         </Button>
       </div>
 
-      {/* Results count */}
-      <p className="text-sm text-muted-foreground">
-        Showing {filteredEntries.length === 0 ? 0 : startIndex + 1}-{endIndex}{' '}
-        of {filteredEntries.length} filtered entries ({entries.length} total)
-      </p>
+      {/* Results count and Options Button aligned below filters */}
+      <div className="flex items-center justify-between mb-2 mt-2">
+        <p className="text-sm text-muted-foreground m-0">
+          Showing {filteredEntries.length === 0 ? 0 : startIndex + 1}-{endIndex}{' '}
+          of {filteredEntries.length} filtered entries ({entries.length} total)
+        </p>
+        <div className="relative">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowColumnMenu((v) => !v);
+            }}
+            title="Table options"
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+          </Button>
+          {showColumnMenu && (
+            <div
+              className="absolute right-0 mt-2 w-44 bg-popover border border-border rounded shadow-lg z-50 p-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="font-semibold text-sm mb-2">
+                Column Visibility
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer text-sm py-1">
+                <input
+                  type="checkbox"
+                  checked={visibleColumns.exampleSentence}
+                  onChange={() =>
+                    setVisibleColumns((v) => ({
+                      ...v,
+                      exampleSentence: !v.exampleSentence,
+                    }))
+                  }
+                />
+                Example
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer text-sm py-1">
+                <input
+                  type="checkbox"
+                  checked={visibleColumns.notes}
+                  onChange={() =>
+                    setVisibleColumns((v) => ({
+                      ...v,
+                      notes: !v.notes,
+                    }))
+                  }
+                />
+                Notes
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ...existing code... */}
 
       {/* Table */}
       <div className="overflow-x-auto">
@@ -809,66 +863,17 @@ export function VocabularyTable({
                   )}
                 </th>
               )}
-              <th className="text-left p-3 font-semibold">Type</th>
-              <th className="text-left p-3 font-semibold">Difficulty</th>
-              <th className="text-left p-3 font-semibold">Status</th>
-              <th className="text-left p-3 font-semibold">Actions</th>
-              {/* Column visibility toggles: options icon with dropdown */}
+              <th className="text-left px-0.5 py-1 font-semibold">Type</th>
+              <th className="text-left px-0.5 py-1 font-semibold">
+                Difficulty
+              </th>
+              <th className="text-left px-0.5 py-1 font-semibold">Status</th>
+              {/* Actions column only */}
               <th
-                className="text-right p-3 font-normal align-top"
+                className="text-center px-1 py-1 font-semibold"
                 style={{ minWidth: 60 }}
               >
-                <div className="relative inline-block">
-                  <button
-                    type="button"
-                    className="p-2 rounded hover:bg-muted/50 focus:outline-none"
-                    aria-label="Table options"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowColumnMenu((v) => !v);
-                    }}
-                  >
-                    <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
-                  </button>
-                  {showColumnMenu && (
-                    <div
-                      className="absolute right-0 mt-2 w-40 bg-popover border border-border rounded shadow-lg z-50 p-2"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="font-semibold text-xs mb-2 text-muted-foreground">
-                        Show Columns
-                      </div>
-                      <label className="flex items-center gap-2 text-sm py-1 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={visibleColumns.exampleSentence}
-                          onChange={() =>
-                            setVisibleColumns((prev) => ({
-                              ...prev,
-                              exampleSentence: !prev.exampleSentence,
-                            }))
-                          }
-                          className="accent-indigo-600"
-                        />
-                        Example
-                      </label>
-                      <label className="flex items-center gap-2 text-sm py-1 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={visibleColumns.notes}
-                          onChange={() =>
-                            setVisibleColumns((prev) => ({
-                              ...prev,
-                              notes: !prev.notes,
-                            }))
-                          }
-                          className="accent-indigo-600"
-                        />
-                        Notes
-                      </label>
-                    </div>
-                  )}
-                </div>
+                Actions
               </th>
             </tr>
           </thead>
@@ -923,17 +928,17 @@ export function VocabularyTable({
                 }`}
                 tabIndex={0}
               >
-                <td className="p-3">
+                <td className="px-1 py-1">
                   <div className="font-medium text-lg">
                     {renderEditableCell(entry, 'word', entry.word)}
                   </div>
                 </td>
-                <td className="p-3">
+                <td className="px-1 py-1">
                   <div className="text-sm">
                     {renderEditableCell(entry, 'reading', entry.reading)}
                   </div>
                 </td>
-                <td className="p-3">
+                <td className="px-1 py-1">
                   <div className="text-sm">
                     {renderEditableCell(
                       entry,
@@ -942,7 +947,7 @@ export function VocabularyTable({
                     )}
                   </div>
                 </td>
-                <td className="p-3">
+                <td className="px-1 py-1">
                   <div className="text-sm font-mono">
                     {renderEditableCell(
                       entry,
@@ -952,7 +957,7 @@ export function VocabularyTable({
                   </div>
                 </td>
                 {visibleColumns.exampleSentence && (
-                  <td className="p-3 max-w-xs">
+                  <td className="px-1 py-1 max-w-xs">
                     <div className="text-sm">
                       {renderEditableCell(
                         entry,
@@ -963,35 +968,33 @@ export function VocabularyTable({
                   </td>
                 )}
                 {visibleColumns.notes && (
-                  <td className="p-3 max-w-xs">
+                  <td className="px-1 py-1 max-w-xs">
                     <div className="text-sm">
                       {renderEditableCell(entry, 'notes', entry.notes)}
                     </div>
                   </td>
                 )}
-                <td className="p-3">
+                <td className="px-0.5 py-0.5">
                   {renderBadgeCell(entry, 'type', entry.type)}
                 </td>
-                <td className="p-3">
+                <td className="px-0.5 py-0.5">
                   {renderBadgeCell(entry, 'difficulty', entry.difficulty)}
                 </td>
-                <td className="p-3">
+                <td className="px-0.5 py-0.5">
                   {renderBadgeCell(entry, 'status', entry.status)}
                 </td>
-                <td className="p-3">
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onDelete(entry.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                {/* Merged Actions & Options cell: only delete in body */}
+                <td className="px-1 py-1 text-center align-middle">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => onDelete(entry.id)}
+                    className="text-destructive hover:text-destructive h-7 w-7"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </td>
-                {/* Empty cell for alignment with header toggles */}
-                <td />
               </tr>
             ))}
           </tbody>
