@@ -12,7 +12,14 @@ import {
   SelectValue,
 } from './ui/select';
 import { Badge } from './ui/badge';
-import { Trash2, Search, Filter, Plus, Sparkles } from 'lucide-react';
+import {
+  Trash2,
+  Search,
+  Filter,
+  Plus,
+  Sparkles,
+  SlidersHorizontal,
+} from 'lucide-react';
 import * as api from '../services/api';
 import {
   type JapaneseWord,
@@ -43,6 +50,44 @@ export function VocabularyTable({
   onAdd,
   onAddMultiple,
 }: VocabularyTableProps) {
+  // Column visibility state for 'exampleSentence' and 'notes'
+  const [visibleColumns, setVisibleColumns] = useState<{
+    exampleSentence: boolean;
+    notes: boolean;
+  }>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('vocabTableVisibleColumns');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+    }
+    return { exampleSentence: true, notes: true };
+  });
+
+  // State for showing/hiding the column menu
+  const [showColumnMenu, setShowColumnMenu] = useState(false);
+
+  // Close the column menu on outside click
+  useEffect(() => {
+    if (!showColumnMenu) return;
+    const handle = (e: MouseEvent) => {
+      setShowColumnMenu(false);
+    };
+    window.addEventListener('click', handle);
+    return () => window.removeEventListener('click', handle);
+  }, [showColumnMenu]);
+
+  // Save visibleColumns to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(
+        'vocabTableVisibleColumns',
+        JSON.stringify(visibleColumns)
+      );
+    }
+  }, [visibleColumns]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<WordType | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<StudyStatus | 'all'>('all');
@@ -681,8 +726,6 @@ export function VocabularyTable({
                 { key: 'reading', label: 'Reading' },
                 { key: 'translation', label: 'Translation' },
                 { key: 'pronunciation', label: 'Pronunciation' },
-                { key: 'exampleSentence', label: 'Example' },
-                { key: 'notes', label: 'Notes' },
               ].map((col) => (
                 <th
                   key={col.key}
@@ -711,10 +754,122 @@ export function VocabularyTable({
                   )}
                 </th>
               ))}
+              {/* Conditionally render Example and Notes columns */}
+              {visibleColumns.exampleSentence && (
+                <th
+                  className="text-left p-3 font-semibold cursor-pointer select-none hover:underline"
+                  onClick={() => {
+                    if (sortBy !== 'exampleSentence') {
+                      setSortBy('exampleSentence');
+                      setSortOrder('asc');
+                    } else if (sortOrder === 'asc') {
+                      setSortOrder('desc');
+                    } else if (sortOrder === 'desc') {
+                      setSortBy(null);
+                      setSortOrder(null);
+                    } else {
+                      setSortOrder('asc');
+                    }
+                  }}
+                >
+                  Example
+                  {sortBy === 'exampleSentence' && (
+                    <span className="ml-1">
+                      {sortOrder === 'asc' && '▲'}
+                      {sortOrder === 'desc' && '▼'}
+                      {sortOrder === null && '⨯'}
+                    </span>
+                  )}
+                </th>
+              )}
+              {visibleColumns.notes && (
+                <th
+                  className="text-left p-3 font-semibold cursor-pointer select-none hover:underline"
+                  onClick={() => {
+                    if (sortBy !== 'notes') {
+                      setSortBy('notes');
+                      setSortOrder('asc');
+                    } else if (sortOrder === 'asc') {
+                      setSortOrder('desc');
+                    } else if (sortOrder === 'desc') {
+                      setSortBy(null);
+                      setSortOrder(null);
+                    } else {
+                      setSortOrder('asc');
+                    }
+                  }}
+                >
+                  Notes
+                  {sortBy === 'notes' && (
+                    <span className="ml-1">
+                      {sortOrder === 'asc' && '▲'}
+                      {sortOrder === 'desc' && '▼'}
+                      {sortOrder === null && '⨯'}
+                    </span>
+                  )}
+                </th>
+              )}
               <th className="text-left p-3 font-semibold">Type</th>
               <th className="text-left p-3 font-semibold">Difficulty</th>
               <th className="text-left p-3 font-semibold">Status</th>
               <th className="text-left p-3 font-semibold">Actions</th>
+              {/* Column visibility toggles: options icon with dropdown */}
+              <th
+                className="text-right p-3 font-normal align-top"
+                style={{ minWidth: 60 }}
+              >
+                <div className="relative inline-block">
+                  <button
+                    type="button"
+                    className="p-2 rounded hover:bg-muted/50 focus:outline-none"
+                    aria-label="Table options"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowColumnMenu((v) => !v);
+                    }}
+                  >
+                    <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                  {showColumnMenu && (
+                    <div
+                      className="absolute right-0 mt-2 w-40 bg-popover border border-border rounded shadow-lg z-50 p-2"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="font-semibold text-xs mb-2 text-muted-foreground">
+                        Show Columns
+                      </div>
+                      <label className="flex items-center gap-2 text-sm py-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns.exampleSentence}
+                          onChange={() =>
+                            setVisibleColumns((prev) => ({
+                              ...prev,
+                              exampleSentence: !prev.exampleSentence,
+                            }))
+                          }
+                          className="accent-indigo-600"
+                        />
+                        Example
+                      </label>
+                      <label className="flex items-center gap-2 text-sm py-1 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={visibleColumns.notes}
+                          onChange={() =>
+                            setVisibleColumns((prev) => ({
+                              ...prev,
+                              notes: !prev.notes,
+                            }))
+                          }
+                          className="accent-indigo-600"
+                        />
+                        Notes
+                      </label>
+                    </div>
+                  )}
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -796,20 +951,24 @@ export function VocabularyTable({
                     )}
                   </div>
                 </td>
-                <td className="p-3 max-w-xs">
-                  <div className="text-sm">
-                    {renderEditableCell(
-                      entry,
-                      'exampleSentence',
-                      entry.exampleSentence
-                    )}
-                  </div>
-                </td>
-                <td className="p-3 max-w-xs">
-                  <div className="text-sm">
-                    {renderEditableCell(entry, 'notes', entry.notes)}
-                  </div>
-                </td>
+                {visibleColumns.exampleSentence && (
+                  <td className="p-3 max-w-xs">
+                    <div className="text-sm">
+                      {renderEditableCell(
+                        entry,
+                        'exampleSentence',
+                        entry.exampleSentence
+                      )}
+                    </div>
+                  </td>
+                )}
+                {visibleColumns.notes && (
+                  <td className="p-3 max-w-xs">
+                    <div className="text-sm">
+                      {renderEditableCell(entry, 'notes', entry.notes)}
+                    </div>
+                  </td>
+                )}
                 <td className="p-3">
                   {renderBadgeCell(entry, 'type', entry.type)}
                 </td>
@@ -831,6 +990,8 @@ export function VocabularyTable({
                     </Button>
                   </div>
                 </td>
+                {/* Empty cell for alignment with header toggles */}
+                <td />
               </tr>
             ))}
           </tbody>
