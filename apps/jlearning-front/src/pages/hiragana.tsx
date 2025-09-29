@@ -1,0 +1,65 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
+
+const HIRAGANA_TABLE = [
+  ['あ', 'い', 'う', 'え', 'お'],
+  ['か', 'き', 'く', 'け', 'こ'],
+  ['さ', 'し', 'す', 'せ', 'そ'],
+  ['た', 'ち', 'つ', 'て', 'と'],
+  ['な', 'に', 'ぬ', 'ね', 'の'],
+  ['は', 'ひ', 'ふ', 'へ', 'ほ'],
+  ['ま', 'み', 'む', 'め', 'も'],
+  ['や', '', 'ゆ', '', 'よ'],
+  ['ら', 'り', 'る', 'れ', 'ろ'],
+  ['わ', '', 'を', '', 'ん'],
+];
+
+const ROW_LABELS = ['a', 'ka', 'sa', 'ta', 'na', 'ha', 'ma', 'ya', 'ra', 'wa'];
+const COL_LABELS = ['a', 'i', 'u', 'e', 'o'];
+
+export default function HiraganaPage() {
+  return (
+    <div className="max-w-2xl mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Hiragana Alphabet</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="table-auto border-collapse w-full text-center">
+              <thead>
+                <tr>
+                  <th className="p-2"></th>
+                  {COL_LABELS.map((col) => (
+                    <th key={col} className="p-2 font-bold uppercase">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {HIRAGANA_TABLE.map((row, i) => (
+                  <tr key={i}>
+                    <td className="p-2 font-bold uppercase">{ROW_LABELS[i]}</td>
+                    {row.map((char, j) => (
+                      <td
+                        key={j}
+                        className="p-2 text-2xl border border-gray-200"
+                      >
+                        {char || '-'}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
