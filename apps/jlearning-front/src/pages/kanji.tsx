@@ -29,7 +29,7 @@ export default function KanjiPage() {
     ? entries.find((e) => e.word.includes(selectedKanji))
     : null;
   return (
-    <div className="max-w-2xl mx-auto animate-fade-in-up">
+    <div className="max-w-2xl mx-auto animate-fade-in">
       <Card className="hover:shadow-lg transition-shadow duration-300">
         <CardHeader>
           <CardTitle>Kanji in Your Vocabulary</CardTitle>
@@ -40,52 +40,66 @@ export default function KanjiPage() {
               No kanji found in your vocabulary.
             </p>
           )}
-          {Object.entries(kanjiByDifficulty).map(([diff, kanjis], diffIndex) => (
-            <div key={diff} className="mb-6 animate-fade-in-up" style={{ animationDelay: `${diffIndex * 0.1}s`, animationFillMode: 'backwards' }}>
-              <div className="font-bold mb-2 capitalize">{diff}</div>
-              <div className="flex flex-wrap gap-2">
-                {[...kanjis].map((k, idx) => (
-                  <Badge
-                    key={k}
-                    className={`cursor-pointer text-2xl px-3 py-2 hover:scale-110 transition-all duration-200 animate-scale-in ${
-                      selectedKanji === k ? 'bg-blue-600 text-white' : ''
-                    }`}
-                    style={{ animationDelay: `${diffIndex * 0.1 + idx * 0.02}s`, animationFillMode: 'backwards' }}
-                    onClick={() => setSelectedKanji(k)}
-                  >
-                    {k}
-                  </Badge>
-                ))}
+          {Object.entries(kanjiByDifficulty).map(
+            ([diff, kanjis], diffIndex) => (
+              <div
+                key={diff}
+                className="mb-6 animate-fade-in-up"
+                style={{
+                  animationDelay: `${diffIndex * 0.1}s`,
+                  animationFillMode: 'backwards',
+                }}
+              >
+                <div className="font-bold mb-2 capitalize">{diff}</div>
+                <div className="flex flex-wrap gap-2">
+                  {[...kanjis].map((k, idx) => (
+                    <Badge
+                      key={k}
+                      className={`cursor-pointer text-4xl px-4 py-3 hover:scale-110 transition-all duration-200 animate-scale-in ${
+                        selectedKanji === k ? 'bg-blue-600 text-white' : ''
+                      }`}
+                      style={{
+                        animationDelay: `${diffIndex * 0.1 + idx * 0.02}s`,
+                        animationFillMode: 'backwards',
+                      }}
+                      onClick={() => setSelectedKanji(k)}
+                    >
+                      {k}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
           {selectedKanji && kanjiInfo && (
-            <div className="mt-8 p-4 border rounded bg-muted animate-slide-down">
-              <div className="text-4xl font-bold mb-2">{selectedKanji}</div>
-              <div className="mb-1">
+            <div className="mt-8 p-6 border rounded bg-muted animate-slide-down">
+              <div className="text-6xl font-bold mb-4 text-center">
+                {selectedKanji}
+              </div>
+              <div className="mb-3 text-lg">
                 <span className="font-semibold">Word Example:</span>{' '}
                 {kanjiInfo.word}
               </div>
               {kanjiInfo.reading && (
-                <div>
+                <div className="mb-3 text-lg">
                   <span className="font-semibold">Reading:</span>{' '}
                   {kanjiInfo.reading}
                 </div>
               )}
               {kanjiInfo.translation && (
-                <div>
+                <div className="mb-3 text-lg">
                   <span className="font-semibold">Translation:</span>{' '}
                   {kanjiInfo.translation}
                 </div>
               )}
               {kanjiInfo.exampleSentence && (
-                <div>
+                <div className="mb-3 text-lg">
                   <span className="font-semibold">Example Sentence:</span>{' '}
                   {kanjiInfo.exampleSentence}
                 </div>
               )}
               {kanjiInfo.notes && (
-                <div>
+                <div className="mb-3 text-lg">
                   <span className="font-semibold">Notes:</span>{' '}
                   {kanjiInfo.notes}
                 </div>

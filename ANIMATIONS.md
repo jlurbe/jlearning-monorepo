@@ -9,61 +9,67 @@ Added the following custom animations to `tailwind.config.js`:
 1. **fade-in**: Smooth opacity transition from 0 to 1
 2. **fade-in-up**: Fade in with upward slide motion
 3. **slide-down**: Slide down with fade effect
-4. **slide-up**: Slide up with fade effect  
+4. **slide-up**: Slide up with fade effect
 5. **scale-in**: Scale from 95% to 100% with fade
 
 ## Components with Animations
 
 ### 1. Main App (app.tsx)
-- **Header**: 
+
+- **Header**:
   - Title slides down on page load
   - Subtitle fades in with 0.1s delay
   - Hover effect: title scales up 105%
-  
 - **Navigation Buttons**:
   - Fade in with 0.2s delay
   - Hover effect: scale up 105%
-  
 - **Route Content**:
   - Fades in and slides up with 0.3s delay
 
 ### 2. Vocabulary Stats (vocabulary-stats.tsx)
+
 - **Stat Cards**:
   - Staggered scale-in animation (0s, 0.1s, 0.2s, 0.3s delays)
   - Hover effect: scale up 105%
   - Smooth shadow transitions
 
 ### 3. Vocabulary Table (vocabulary-table.tsx)
+
 - **Empty State**: Fades in
 - **Filter Section**: Slides down on load
 - **Column Menu**: Fades in when opened
 - **New Row Form**: Slides down with animation
-- **Table Rows**: 
-  - Each row fades in and slides up
-  - Staggered delays (0.05s per row)
+- **Table Rows**:
+  - Each row fades in with simple opacity transition
+  - Staggered delays (0.02s per row)
   - Smooth color transitions on hover
 - **Delete Button**: Scales up 110% on hover with smooth transition
 - **No Results Message**: Fades in
 
 ### 4. Hiragana Page (hiragana.tsx)
+
 - **Card Container**: Fades in and slides up
 - **Card Shadow**: Smooth transition on hover
-- **Table Rows**: Staggered fade-in-up (0.05s per row)
+- **Table Rows**: Staggered fade-in (0.05s per row)
 - **Character Cells**:
   - Hover background color transition
   - Hover scale up 110%
   - Smooth cursor pointer
+- **Table Container**: Overflow hidden with rounded corners to prevent scroll issues
 
 ### 5. Katakana Page (katakana.tsx)
+
 - **Card Container**: Fades in and slides up
 - **Card Shadow**: Smooth transition on hover
-- **Table Rows**: Staggered fade-in-up (0.05s per row)
+- **Table Rows**: Staggered fade-in (0.05s per row)
 - **Character Cells**:
   - Hover background color transition
+- **Table Container**: Overflow hidden with rounded corners to prevent scroll issues
   - Hover scale up 110%
   - Smooth cursor pointer
 
 ### 6. Kanji Page (kanji.tsx)
+
 - **Card Container**: Fades in and slides up
 - **Card Shadow**: Smooth transition on hover
 - **Empty State**: Fades in
@@ -72,9 +78,13 @@ Added the following custom animations to `tailwind.config.js`:
   - Scale-in animation with delays (0.02s per badge)
   - Hover scale up 110%
   - Smooth transitions
+  - Increased size (text-4xl) for better readability
 - **Selected Kanji Info**: Slides down when displayed
+  - Large kanji display (text-6xl) for better visibility
+  - Increased text size and spacing for readability
 
 ### 7. Vocabulary Manager (vocabulary-manager.tsx)
+
 - **Loading State**: Book icon with pulse animation (already existed)
 
 ## Bug Fixes

@@ -926,8 +926,8 @@ export function VocabularyTable({
                 data-row-id={entry.id}
                 className={`border-b hover:bg-muted/50 transition-colors ${
                   index % 2 === 0 ? 'bg-card' : 'bg-background'
-                } animate-fade-in-up`}
-                style={{ animationDelay: `${index * 0.05}s` }}
+                } animate-fade-in`}
+                style={{ animationDelay: `${index * 0.02}s` }}
                 tabIndex={0}
               >
                 <td className="px-1 py-1">
