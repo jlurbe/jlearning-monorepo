@@ -14,7 +14,7 @@ export function VocabularyStats({ stats }: VocabularyStatsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Words */}
-      <Card>
+      <Card className="animate-scale-in hover:scale-105 transition-transform duration-300" style={{ animationDelay: '0s' }}>
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -29,7 +29,7 @@ export function VocabularyStats({ stats }: VocabularyStatsProps) {
       </Card>
 
       {/* Mastered */}
-      <Card>
+      <Card className="animate-scale-in hover:scale-105 transition-transform duration-300" style={{ animationDelay: '0.1s' }}>
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
@@ -45,7 +45,7 @@ export function VocabularyStats({ stats }: VocabularyStatsProps) {
       </Card>
 
       {/* Learning */}
-      <Card>
+      <Card className="animate-scale-in hover:scale-105 transition-transform duration-300" style={{ animationDelay: '0.2s' }}>
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
@@ -60,7 +60,7 @@ export function VocabularyStats({ stats }: VocabularyStatsProps) {
       </Card>
 
       {/* Reviewing */}
-      <Card>
+      <Card className="animate-scale-in hover:scale-105 transition-transform duration-300" style={{ animationDelay: '0.3s' }}>
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">

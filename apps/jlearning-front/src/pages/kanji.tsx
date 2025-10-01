@@ -29,27 +29,28 @@ export default function KanjiPage() {
     ? entries.find((e) => e.word.includes(selectedKanji))
     : null;
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card>
+    <div className="max-w-2xl mx-auto animate-fade-in-up">
+      <Card className="hover:shadow-lg transition-shadow duration-300">
         <CardHeader>
           <CardTitle>Kanji in Your Vocabulary</CardTitle>
         </CardHeader>
         <CardContent>
           {Object.keys(kanjiByDifficulty).length === 0 && (
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground animate-fade-in">
               No kanji found in your vocabulary.
             </p>
           )}
-          {Object.entries(kanjiByDifficulty).map(([diff, kanjis]) => (
-            <div key={diff} className="mb-6">
+          {Object.entries(kanjiByDifficulty).map(([diff, kanjis], diffIndex) => (
+            <div key={diff} className="mb-6 animate-fade-in-up" style={{ animationDelay: `${diffIndex * 0.1}s`, animationFillMode: 'backwards' }}>
               <div className="font-bold mb-2 capitalize">{diff}</div>
               <div className="flex flex-wrap gap-2">
-                {[...kanjis].map((k) => (
+                {[...kanjis].map((k, idx) => (
                   <Badge
                     key={k}
-                    className={`cursor-pointer text-2xl px-3 py-2 ${
+                    className={`cursor-pointer text-2xl px-3 py-2 hover:scale-110 transition-all duration-200 animate-scale-in ${
                       selectedKanji === k ? 'bg-blue-600 text-white' : ''
                     }`}
+                    style={{ animationDelay: `${diffIndex * 0.1 + idx * 0.02}s`, animationFillMode: 'backwards' }}
                     onClick={() => setSelectedKanji(k)}
                   >
                     {k}
@@ -59,7 +60,7 @@ export default function KanjiPage() {
             </div>
           ))}
           {selectedKanji && kanjiInfo && (
-            <div className="mt-8 p-4 border rounded bg-muted">
+            <div className="mt-8 p-4 border rounded bg-muted animate-slide-down">
               <div className="text-4xl font-bold mb-2">{selectedKanji}</div>
               <div className="mb-1">
                 <span className="font-semibold">Word Example:</span>{' '}

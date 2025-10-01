@@ -60,7 +60,10 @@ export function VocabularyTable({
       if (saved) {
         try {
           return JSON.parse(saved);
-        } catch {}
+        } catch (e) {
+          // Ignore parse errors and use defaults
+          console.debug('Failed to parse saved column visibility', e);
+        }
       }
     }
     return { exampleSentence: true, notes: true };
@@ -595,7 +598,7 @@ export function VocabularyTable({
 
   if (entries.length === 0 && !showNewRow) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 animate-fade-in">
         <p className="text-muted-foreground text-lg">
           No vocabulary entries yet.
         </p>
@@ -616,7 +619,7 @@ export function VocabularyTable({
   return (
     <div className="space-y-4 p-6">
       {/* Filters, Page Size and Add Button */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 animate-slide-down">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
@@ -731,7 +734,7 @@ export function VocabularyTable({
           </Button>
           {showColumnMenu && (
             <div
-              className="absolute right-0 mt-2 w-44 bg-popover border border-border rounded shadow-lg z-50 p-2"
+              className="absolute right-0 mt-2 w-44 bg-popover border border-border rounded shadow-lg z-50 p-2 animate-fade-in"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="font-semibold text-sm mb-2">
@@ -767,8 +770,6 @@ export function VocabularyTable({
           )}
         </div>
       </div>
-
-      {/* ...existing code... */}
 
       {/* Table */}
       <div className="overflow-x-auto">
@@ -879,7 +880,7 @@ export function VocabularyTable({
           </thead>
           <tbody>
             {showNewRow && (
-              <tr className="border-b bg-muted/20">
+              <tr className="border-b bg-muted/20 animate-slide-down">
                 <td className="p-3" colSpan={9}>
                   <div className="flex items-center gap-2">
                     <Input
@@ -923,9 +924,10 @@ export function VocabularyTable({
               <tr
                 key={entry.id}
                 data-row-id={entry.id}
-                className={`border-b hover:bg-muted/50 ${
+                className={`border-b hover:bg-muted/50 transition-colors ${
                   index % 2 === 0 ? 'bg-card' : 'bg-background'
-                }`}
+                } animate-fade-in-up`}
+                style={{ animationDelay: `${index * 0.05}s` }}
                 tabIndex={0}
               >
                 <td className="px-1 py-1">
@@ -989,7 +991,7 @@ export function VocabularyTable({
                     size="icon"
                     variant="outline"
                     onClick={() => onDelete(entry.id)}
-                    className="text-destructive hover:text-destructive h-7 w-7"
+                    className="text-destructive hover:text-destructive h-7 w-7 hover:scale-110 transition-transform"
                     title="Delete"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -1002,7 +1004,7 @@ export function VocabularyTable({
       </div>
 
       {filteredEntries.length === 0 && searchTerm && (
-        <div className="text-center py-8">
+        <div className="text-center py-8 animate-fade-in">
           <p className="text-muted-foreground">
             No entries match your search criteria.
           </p>

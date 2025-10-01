@@ -23,8 +23,8 @@ const COL_LABELS = ['a', 'i', 'u', 'e', 'o'];
 
 export default function HiraganaPage() {
   return (
-    <div className="max-w-2xl mx-auto">
-      <Card>
+    <div className="max-w-2xl mx-auto animate-fade-in-up">
+      <Card className="hover:shadow-lg transition-shadow duration-300">
         <CardHeader>
           <CardTitle>Hiragana Alphabet</CardTitle>
         </CardHeader>
@@ -43,12 +43,12 @@ export default function HiraganaPage() {
               </thead>
               <tbody>
                 {HIRAGANA_TABLE.map((row, i) => (
-                  <tr key={i}>
+                  <tr key={i} className="animate-fade-in-up" style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'backwards' }}>
                     <td className="p-2 font-bold uppercase">{ROW_LABELS[i]}</td>
                     {row.map((char, j) => (
                       <td
                         key={j}
-                        className="p-2 text-2xl border border-gray-200"
+                        className="p-2 text-2xl border border-gray-200 hover:bg-primary/10 hover:scale-110 transition-all duration-200 cursor-pointer"
                       >
                         {char || '-'}
                       </td>
