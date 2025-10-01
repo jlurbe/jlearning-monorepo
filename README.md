@@ -61,6 +61,8 @@ nx serve jlearning-front
 
 The frontend application will be available at `http://localhost:4200`.
 
+If you have troubles with sqlite when running the backend, try to run `npm rebuild sqlite3`.
+
 ## 🆕 New Features
 
 - **AI-powered Vocabulary Extraction:** Paste or type Japanese text and let the app automatically extract and analyze vocabulary using Google Gemini (Gemini API key required for backend).
