@@ -1,6 +1,14 @@
 import { JapaneseWord } from '../../../shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
-import { InsertResult, DeleteResult } from 'typeorm';
+
+export interface InsertResult {
+  insertId?: string;
+  rowsAffected: number;
+}
+
+export interface DeleteResult {
+  rowsAffected: number;
+}
 
 export abstract class JapaneseWordsRepository {
   abstract createJapaneseWord(
