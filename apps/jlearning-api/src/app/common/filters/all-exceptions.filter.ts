@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { QueryFailedError } from 'typeorm';
+import { DrizzleError } from 'drizzle-orm';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -28,7 +28,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       message = exception.getResponse();
-    } else if (exception instanceof QueryFailedError) {
+    } else if (exception instanceof DrizzleError) {
       status = HttpStatus.BAD_REQUEST; // Treat DB constraint errors as bad requests
       message = 'A database constraint was violated.';
       this.logger.error(`QueryFailedError: ${exception.message}`);
