@@ -7,7 +7,7 @@ This workspace is a monorepo managed by [Nx](https://nx.dev) for the JLearning p
 ## ✨ Tech Stack
 
 - **Monorepo:** Nx
-- **Backend:** NestJS, TypeORM, SQLite
+- **Backend:** NestJS, Drizzle ORM, Turso (LibSQL)
 - **Frontend:** React, Vite, TypeScript, React Router
 
 ## 📦 Projects in this Workspace
@@ -24,6 +24,7 @@ This monorepo contains the following main applications:
 
 - Node.js (LTS version recommended)
 - `npm`, `yarn`, or `pnpm`
+- Turso account and database (for production/cloud database)
 
 ### Installation
 
@@ -31,6 +32,15 @@ This monorepo contains the following main applications:
 2.  Install the dependencies from the root of the monorepo:
     ```sh
     npm install
+    ```
+3.  Set up environment variables (create `.env` file in the root):
+    ```env
+    # Turso Database Configuration
+    TURSO_DATABASE_URL=your_turso_database_url
+    TURSO_AUTH_TOKEN=your_turso_auth_token
+    
+    # Optional: For local development without Turso
+    # Leave TURSO_DATABASE_URL empty to use local SQLite
     ```
 
 ## 💻 Development
@@ -61,7 +71,46 @@ nx serve jlearning-front
 
 The frontend application will be available at `http://localhost:4200`.
 
-If you have troubles with sqlite when running the backend, try to run `npm rebuild sqlite3`.
+## 🗄️ Database Configuration
+
+This project uses **Drizzle ORM** with **Turso** (LibSQL) as the primary database solution:
+
+### Turso Setup (Recommended)
+
+1. **Create a Turso account** at [turso.tech](https://turso.tech)
+2. **Create a new database** in the Turso dashboard
+3. **Get your database URL and auth token** from the Turso dashboard
+4. **Set environment variables** in your `.env` file:
+   ```env
+   TURSO_DATABASE_URL=libsql://your-database-name.turso.io
+   TURSO_AUTH_TOKEN=your-auth-token
+   ```
+
+### Local Development (SQLite)
+
+For local development without Turso, you can use a local SQLite database:
+
+1. **Leave `TURSO_DATABASE_URL` empty** in your `.env` file
+2. **The application will automatically use local SQLite** for development
+3. **Database file** will be created at `jlearning.sqlite` in the project root
+
+### Database Migrations
+
+The project uses Drizzle Kit for database migrations:
+
+```sh
+# Generate migrations
+nx run jlearning-api:drizzle-kit generate
+
+# Apply migrations
+nx run jlearning-api:drizzle-kit migrate
+```
+
+### Schema Management
+
+- **Schema definitions** are located in `libs/api-common/src/lib/contexts/japanese-words/infrastructure/schema/`
+- **Drizzle configuration** is in `apps/jlearning-api/drizzle.config.ts`
+- **Migrations** are stored in `apps/jlearning-api/drizzle/`
 
 ## 🆕 New Features
 
@@ -71,6 +120,7 @@ If you have troubles with sqlite when running the backend, try to run `npm rebui
 - **Stats Dashboard:** Visualize your progress with stats for total, mastered, learning, and reviewing words.
 - **Modern UI:** Responsive, accessible, and themeable interface using Tailwind CSS and Radix UI components.
 - **End-to-End Testing:** Playwright-based E2E tests for frontend reliability.
+- **Modern Database Stack:** Migrated from TypeORM to Drizzle ORM with Turso (LibSQL) for better performance and type safety.
 
 ## 🛠️ Building for Production
 
