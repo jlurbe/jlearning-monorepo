@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import {
   JapaneseWordsRepository,
@@ -15,7 +15,10 @@ import { IDatabaseService } from '../../../shared/domain/database.interface';
 
 @Injectable()
 export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
-  constructor(private readonly databaseService: IDatabaseService) {}
+  constructor(
+    @Inject('IDatabaseService')
+    private readonly databaseService: IDatabaseService
+  ) {}
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto

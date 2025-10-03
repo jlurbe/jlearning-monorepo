@@ -39,7 +39,7 @@ export class JapanesWordsController {
     const result = await this.japaneseWordService.createManyJapaneseWords(
       createManyDto.words
     );
-    return { created: result.identifiers.length };
+    return { created: result.rowsAffected };
   }
 
   @Get()
@@ -75,7 +75,7 @@ export class JapanesWordsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     const result = await this.japaneseWordService.deleteJapaneseWord(id);
-    if (result.affected === 0) {
+    if (result.rowsAffected === 0) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
   }

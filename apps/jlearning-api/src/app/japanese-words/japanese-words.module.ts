@@ -13,6 +13,10 @@ import { DatabaseService } from '../common/database/database.service';
     JapaneseWordsService,
     DatabaseService,
     {
+      provide: 'IDatabaseService',
+      useExisting: DatabaseService,
+    },
+    {
       provide: JapaneseWordsRepository,
       useClass: JapaneseWordsDrizzleRepository,
     },

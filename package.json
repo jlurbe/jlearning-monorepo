@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:dev": "nx run-many -t serve -p jlearning-api jlearning-front",
+    "start:dev": "nx run-many -t serve -p jlearning-api jlearning-front --no-tui",
     "db:generate": "cd apps/jlearning-api && npx drizzle-kit generate",
     "db:migrate": "cd apps/jlearning-api && npx drizzle-kit migrate",
     "db:studio": "cd apps/jlearning-api && npx drizzle-kit studio",

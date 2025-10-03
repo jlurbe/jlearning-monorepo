@@ -22,8 +22,8 @@ export class DatabaseService implements OnModuleInit, IDatabaseService {
     try {
       // Run migrations if TURSO_DATABASE_URL is set
       if (process.env.TURSO_DATABASE_URL) {
-        await migrate(this.db, { migrationsFolder: './drizzle' });
-        console.log('✅ Database migrations completed successfully');
+        // await migrate(this.db, { migrationsFolder: './drizzle' });
+        // console.log('✅ Database migrations completed successfully');
       } else {
         console.log('⚠️  TURSO_DATABASE_URL not set, skipping migrations');
       }

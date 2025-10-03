@@ -15,16 +15,10 @@ export const japaneseWordsTable = sqliteTable('japanese_words', {
   translation: text('translation'),
   pronunciation: text('pronunciation'),
   exampleSentence: text('example_sentence'),
-  type: text('type', {
-    enum: Object.values(WordType) as [string, ...string[]],
-  }),
+  type: text('type'),
   notes: text('notes'),
-  status: text('status', {
-    enum: Object.values(StudyStatus) as [string, ...string[]],
-  }).default(StudyStatus.NEW),
-  difficulty: text('difficulty', {
-    enum: Object.values(DifficultyLevel) as [string, ...string[]],
-  }).default(DifficultyLevel.BEGINNER),
+  status: text('status').default(StudyStatus.NEW),
+  difficulty: text('difficulty').default(DifficultyLevel.BEGINNER),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
