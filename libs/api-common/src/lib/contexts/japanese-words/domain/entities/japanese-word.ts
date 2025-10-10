@@ -36,7 +36,7 @@ export class JapaneseWordPrimitive implements JapaneseWord {
 export class JapaneseWordEntity
   implements Entity<JapaneseWordEntity, JapaneseWordPrimitive>
 {
-  private readonly id: Id;
+  private readonly id?: Id;
   private readonly word: Word;
   private readonly reading?: Reading | null;
   private readonly translation?: Translation | null;
@@ -74,7 +74,7 @@ export class JapaneseWordEntity
 
   toPrimitives(): JapaneseWordPrimitive {
     return {
-      id: this.id.value,
+      id: this.id?.value,
       word: this.word.value,
       reading: this.reading?.value || null,
       translation: this.translation?.value || null,
