@@ -25,19 +25,17 @@ export enum WordType {
 }
 
 export interface JapaneseWord {
-  id: string;
+  id?: string;
   word: string;
-  reading: string | null;
-  translation: string | null;
-  pronunciation: string | null;
-  exampleSentence: string | null;
-  type: WordType | null;
-  difficulty: DifficultyLevel | null;
-  status: StudyStatus | null;
-  notes: string | null;
-  reviewedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
+  reading?: string | null;
+  translation?: string | null;
+  pronunciation?: string | null;
+  exampleSentence?: string | null;
+  type?: WordType | null;
+  difficulty?: DifficultyLevel | null;
+  status?: StudyStatus | null;
+  notes?: string | null;
+  reviewedAt?: Date | null;
 }
 
 export interface JapaneseWordsStats {
