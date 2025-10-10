@@ -10,7 +10,7 @@ export abstract class ValueObject<T extends Primitives> {
     this.ensureValueIsDefined(value);
   }
 
-  protected ensureValueIsDefined(value: T): void {
+  private ensureValueIsDefined(value: T): void {
     if (value === undefined) {
       throw new InvalidArgumentError(
         `Value on <${
@@ -20,14 +20,8 @@ export abstract class ValueObject<T extends Primitives> {
     }
   }
 
-  ensureIsNotNull(value: unknown): void {
-    if (value === null) {
-      throw new InvalidArgumentError(
-        `Value on <${
-          this.constructor.name
-        }> [${this.toString()}] must be not null`
-      );
-    }
+  isEmpty(): boolean {
+    return this.value === null || this.value === '';
   }
 
   equals(other: ValueObject<T>): boolean {
@@ -39,9 +33,7 @@ export abstract class ValueObject<T extends Primitives> {
 
   toString(): string {
     if (this.value instanceof Date) return this.value.toISOString();
-    if (typeof this.value === 'object') return JSON.stringify(this.value);
     if (this.value === null) return 'null';
-    if (this.value === undefined) return 'undefined';
     return this.value.toString();
   }
 
