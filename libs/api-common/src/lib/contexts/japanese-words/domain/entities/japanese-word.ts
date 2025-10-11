@@ -19,7 +19,7 @@ import {
   ReviewedAt,
 } from '../value-objects';
 
-export class JapaneseWordPrimitive implements JapaneseWord {
+export class JapaneseWordPrimitives implements JapaneseWord {
   id?: string;
   word!: string;
   reading?: string | null;
@@ -34,7 +34,7 @@ export class JapaneseWordPrimitive implements JapaneseWord {
 }
 
 export class JapaneseWordEntity
-  implements Entity<JapaneseWordEntity, JapaneseWordPrimitive>
+  implements Entity<JapaneseWordEntity, JapaneseWordPrimitives>
 {
   private readonly id?: Id;
   private readonly word: Word;
@@ -48,7 +48,7 @@ export class JapaneseWordEntity
   private readonly notes?: Notes | null;
   private readonly reviewedAt?: ReviewedAt | null;
 
-  constructor(primitive: JapaneseWordPrimitive) {
+  constructor(primitive: JapaneseWordPrimitives) {
     this.id = new Id(primitive.id || crypto.randomUUID());
     this.word = new Word(primitive.word);
     this.reading = primitive.reading ? new Reading(primitive.reading) : null;
@@ -72,7 +72,7 @@ export class JapaneseWordEntity
       : null;
   }
 
-  toPrimitives(): JapaneseWordPrimitive {
+  toPrimitives(): JapaneseWordPrimitives {
     return {
       id: this.id?.value,
       word: this.word.value,

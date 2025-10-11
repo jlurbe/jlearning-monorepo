@@ -1,5 +1,6 @@
 import { JapaneseWord } from '../../../shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
+import { JapaneseWordPrimitives } from '../entities/japanese-word';
 
 export interface InsertResult {
   insertId?: string;
@@ -13,16 +14,20 @@ export interface DeleteResult {
 export abstract class JapaneseWordsRepository {
   abstract createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWord>;
+  ): Promise<JapaneseWordPrimitives>;
   abstract createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
   ): Promise<InsertResult>;
-  abstract getAllJapaneseWords(): Promise<JapaneseWord[]>;
-  abstract getJapaneseWordById(id: string): Promise<JapaneseWord | null>;
-  abstract getJapaneseWordByWord(word: string): Promise<JapaneseWord | null>;
+  abstract getAllJapaneseWords(): Promise<JapaneseWordPrimitives[]>;
+  abstract getJapaneseWordById(
+    id: string
+  ): Promise<JapaneseWordPrimitives | null>;
+  abstract getJapaneseWordByWord(
+    word: string
+  ): Promise<JapaneseWordPrimitives | null>;
   abstract updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWord>
-  ): Promise<JapaneseWord | null>;
+    updates: Partial<JapaneseWordPrimitives>
+  ): Promise<JapaneseWordPrimitives | null>;
   abstract deleteJapaneseWord(id: string): Promise<DeleteResult>;
 }

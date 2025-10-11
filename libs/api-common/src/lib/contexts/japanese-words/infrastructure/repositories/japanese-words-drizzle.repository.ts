@@ -12,6 +12,7 @@ import {
   NewJapaneseWord,
 } from '../schema/japanese-words.schema';
 import { IDatabaseService } from '../../../shared/domain/database.interface';
+import { JapaneseWordPrimitives } from '../../domain/entities/japanese-word';
 
 @Injectable()
 export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
@@ -22,7 +23,7 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWord> {
+  ): Promise<JapaneseWordPrimitives> {
     const [newWord] = await this.databaseService.db
       .insert(japaneseWordsTable)
       .values(wordData as NewJapaneseWord)
@@ -51,43 +52,47 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
     }
   }
 
-  async getAllJapaneseWords(): Promise<JapaneseWord[]> {
+  async getAllJapaneseWords(): Promise<JapaneseWordPrimitives[]> {
     return this.databaseService.db
       .select()
-      .from(japaneseWordsTable) as unknown as JapaneseWord[];
+      .from(japaneseWordsTable) as unknown as JapaneseWordPrimitives[];
   }
 
-  async getJapaneseWordById(id: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordById(
+    id: string
+  ): Promise<JapaneseWordPrimitives | null> {
     const [word] = await this.databaseService.db
       .select()
       .from(japaneseWordsTable)
       .where(eq(japaneseWordsTable.id, id))
       .limit(1);
 
-    return (word as JapaneseWord) || null;
+    return (word as JapaneseWordPrimitives) || null;
   }
 
-  async getJapaneseWordByWord(word: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordByWord(
+    word: string
+  ): Promise<JapaneseWordPrimitives | null> {
     const [result] = await this.databaseService.db
       .select()
       .from(japaneseWordsTable)
       .where(eq(japaneseWordsTable.word, word))
       .limit(1);
 
-    return (result as JapaneseWord) || null;
+    return (result as JapaneseWordPrimitives) || null;
   }
 
   async updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWord>
-  ): Promise<JapaneseWord | null> {
+    updates: Partial<JapaneseWordPrimitives>
+  ): Promise<JapaneseWordPrimitives | null> {
     const [updatedWord] = await this.databaseService.db
       .update(japaneseWordsTable)
       .set(updates)
       .where(eq(japaneseWordsTable.id, id))
       .returning();
 
-    return (updatedWord as JapaneseWord) || null;
+    return (updatedWord as JapaneseWordPrimitives) || null;
   }
 
   async deleteJapaneseWord(id: string): Promise<DeleteResult> {
