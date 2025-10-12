@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { JapaneseWord } from '@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
-import { JapaneseWordPrimitives } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/entities/japanese-word';
+import { JapaneseWordEntity } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/entities/japanese-word';
 import { JapaneseWordsRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
+import { UpdateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/update-japanese-word.dto';
 
 @Injectable()
 export class JapaneseWordsService {
@@ -12,36 +12,34 @@ export class JapaneseWordsService {
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWordPrimitives> {
+  ): Promise<JapaneseWordEntity> {
     return this.japaneseWordRepository.createJapaneseWord(wordData);
   }
 
   async createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
-  ): Promise<JapaneseWordPrimitives[]> {
+  ): Promise<JapaneseWordEntity[]> {
     return this.japaneseWordRepository.createManyJapaneseWords(wordsData);
   }
 
-  async getAllJapaneseWords(): Promise<JapaneseWordPrimitives[]> {
+  async getAllJapaneseWords(): Promise<JapaneseWordEntity[]> {
     return this.japaneseWordRepository.getAllJapaneseWords();
   }
 
-  async getJapaneseWordById(
-    id: string
-  ): Promise<JapaneseWordPrimitives | null> {
+  async getJapaneseWordById(id: string): Promise<JapaneseWordEntity | null> {
     return this.japaneseWordRepository.getJapaneseWordById(id);
   }
 
   async getJapaneseWordByWord(
     word: string
-  ): Promise<JapaneseWordPrimitives | null> {
+  ): Promise<JapaneseWordEntity | null> {
     return this.japaneseWordRepository.getJapaneseWordByWord(word);
   }
 
   async updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWordPrimitives>
-  ): Promise<JapaneseWord | null> {
+    updates: UpdateJapaneseWordDto
+  ): Promise<JapaneseWordEntity | null> {
     return this.japaneseWordRepository.updateJapaneseWord(id, updates);
   }
 

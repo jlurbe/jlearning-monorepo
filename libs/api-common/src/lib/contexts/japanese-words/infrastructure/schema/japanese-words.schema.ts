@@ -15,7 +15,7 @@ export const japaneseWordsTable = sqliteTable('japanese_words', {
   translation: text('translation'),
   pronunciation: text('pronunciation'),
   exampleSentence: text('example_sentence'),
-  type: text('type'),
+  type: text('type').default(WordType.OTHER),
   notes: text('notes'),
   status: text('status').default(StudyStatus.NEW),
   difficulty: text('difficulty').default(DifficultyLevel.BEGINNER),
@@ -28,14 +28,3 @@ export const japaneseWordsTable = sqliteTable('japanese_words', {
     .$onUpdate(() => new Date()),
   reviewedAt: integer('reviewed_at', { mode: 'timestamp' }),
 });
-
-export type JapaneseWord = typeof japaneseWordsTable.$inferSelect & {
-  type: WordType | null;
-  status: StudyStatus | null;
-  difficulty: DifficultyLevel | null;
-};
-export type NewJapaneseWord = typeof japaneseWordsTable.$inferInsert & {
-  type: WordType | null;
-  status: StudyStatus | null;
-  difficulty: DifficultyLevel | null;
-};

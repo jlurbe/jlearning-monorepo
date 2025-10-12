@@ -36,17 +36,17 @@ export class JapaneseWordPrimitives implements JapaneseWord {
 export class JapaneseWordEntity
   implements Entity<JapaneseWordEntity, JapaneseWordPrimitives>
 {
-  private readonly id?: Id;
-  private readonly word: Word;
-  private readonly reading?: Reading | null;
-  private readonly translation?: Translation | null;
-  private readonly pronunciation?: Pronunciation | null;
-  private readonly exampleSentence?: ExampleSentence | null;
-  private readonly type?: WordType | null;
-  private readonly difficulty?: DifficultyLevel | null;
-  private readonly status?: StudyStatus | null;
-  private readonly notes?: Notes | null;
-  private readonly reviewedAt?: ReviewedAt | null;
+  readonly id?: Id;
+  readonly word: Word;
+  readonly reading?: Reading | null;
+  readonly translation?: Translation | null;
+  readonly pronunciation?: Pronunciation | null;
+  readonly exampleSentence?: ExampleSentence | null;
+  readonly type?: WordType | null;
+  readonly difficulty?: DifficultyLevel | null;
+  readonly status?: StudyStatus | null;
+  readonly notes?: Notes | null;
+  readonly reviewedAt?: ReviewedAt | null;
 
   constructor(primitive: JapaneseWordPrimitives) {
     this.id = new Id(primitive.id || crypto.randomUUID());

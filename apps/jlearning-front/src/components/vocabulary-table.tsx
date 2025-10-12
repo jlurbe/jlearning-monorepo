@@ -414,7 +414,7 @@ export function VocabularyTable({
           translation: result.translation || '',
           pronunciation: result.pronunciation || '',
           exampleSentence: result.exampleSentence || '',
-          type: result.type || WordType.NOUN,
+          type: result.type || WordType.OTHER,
           difficulty: result.difficulty || DifficultyLevel.BEGINNER,
           status: result.status || StudyStatus.NEW,
           notes: result.notes || '',

@@ -17,6 +17,7 @@ import { CreateManyJapaneseWordsDto } from '@jlearning-monorepo/api-common/conte
 import { AnalyzeTextDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/analyze-text.dto';
 import { UpdateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/update-japanese-word.dto';
 import { AiService } from './services/ai.service';
+import { JapaneseWordPrimitives } from '../../../../../libs/api-common/src/lib/contexts/japanese-words/domain/entities/japanese-word';
 
 @Controller('japanese-words')
 export class JapanesWordsController {
@@ -26,41 +27,58 @@ export class JapanesWordsController {
   ) {}
 
   @Post('analyze')
-  analyzeText(@Body() analyzeTextDto: AnalyzeTextDto) {
-    return this.aiService.getVocabularyFromText(analyzeTextDto.text);
+  analyzeText(
+    @Body() analyzeTextDto: AnalyzeTextDto
+  ): Promise<JapaneseWordPrimitives[]> {
+    return this.aiService
+      .getVocabularyFromText(analyzeTextDto.text)
+      .then((words) => words.map((word) => word as JapaneseWordPrimitives));
   }
   @Post()
-  create(@Body() createJapaneseWordDto: CreateJapaneseWordDto) {
-    return this.japaneseWordService.createJapaneseWord(createJapaneseWordDto);
+  create(
+    @Body() createJapaneseWordDto: CreateJapaneseWordDto
+  ): Promise<JapaneseWordPrimitives> {
+    return this.japaneseWordService
+      .createJapaneseWord(createJapaneseWordDto)
+      .then((word) => word.toPrimitives());
   }
 
   @Post('batch')
-  async createMany(@Body() createManyDto: CreateManyJapaneseWordsDto) {
+  async createMany(
+    @Body() createManyDto: CreateManyJapaneseWordsDto
+  ): Promise<{ created: number; words: JapaneseWordPrimitives[] }> {
     const result = await this.japaneseWordService.createManyJapaneseWords(
       createManyDto.words
     );
-    return { created: result.length, words: result };
+    return {
+      created: result.length,
+      words: result.map((word) => word.toPrimitives()),
+    };
   }
 
   @Get()
-  findAll() {
-    return this.japaneseWordService.getAllJapaneseWords();
+  async findAll(): Promise<JapaneseWordPrimitives[]> {
+    return this.japaneseWordService
+      .getAllJapaneseWords()
+      .then((words) => words.map((word) => word.toPrimitives()));
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string
+  ): Promise<JapaneseWordPrimitives> {
     const word = await this.japaneseWordService.getJapaneseWordById(id);
     if (!word) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
-    return word;
+    return word.toPrimitives();
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateJapaneseWordDto: UpdateJapaneseWordDto
-  ) {
+  ): Promise<JapaneseWordPrimitives> {
     const updatedWord = await this.japaneseWordService.updateJapaneseWord(
       id,
       updateJapaneseWordDto
@@ -68,7 +86,7 @@ export class JapanesWordsController {
     if (!updatedWord) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
-    return updatedWord;
+    return updatedWord.toPrimitives();
   }
 
   @Delete(':id')
