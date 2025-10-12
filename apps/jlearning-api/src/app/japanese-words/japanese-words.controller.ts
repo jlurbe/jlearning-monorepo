@@ -74,9 +74,6 @@ export class JapanesWordsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
-    const result = await this.japaneseWordService.deleteJapaneseWord(id);
-    if (result.rowsAffected === 0) {
-      throw new NotFoundException(`Word with ID ${id} not found`);
-    }
+    await this.japaneseWordService.deleteJapaneseWord(id);
   }
 }

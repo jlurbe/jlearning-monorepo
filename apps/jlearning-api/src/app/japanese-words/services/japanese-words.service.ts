@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JapaneseWord } from '@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
 import { JapaneseWordPrimitives } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/entities/japanese-word';
-import {
-  JapaneseWordsRepository,
-  DeleteResult,
-} from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
+import { JapaneseWordsRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
 
 @Injectable()
 export class JapaneseWordsService {
@@ -48,7 +45,7 @@ export class JapaneseWordsService {
     return this.japaneseWordRepository.updateJapaneseWord(id, updates);
   }
 
-  async deleteJapaneseWord(id: string): Promise<DeleteResult> {
-    return this.japaneseWordRepository.deleteJapaneseWord(id);
+  async deleteJapaneseWord(id: string): Promise<void> {
+    await this.japaneseWordRepository.deleteJapaneseWord(id);
   }
 }

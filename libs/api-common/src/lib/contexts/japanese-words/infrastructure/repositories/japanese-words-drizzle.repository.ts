@@ -1,9 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import {
-  JapaneseWordsRepository,
-  DeleteResult,
-} from '../../domain/repositories/japanese-words.repository';
+import { JapaneseWordsRepository } from '../../domain/repositories/japanese-words.repository';
 import { CreateJapaneseWordDto } from '../../domain/dto/create-japanese-word.dto';
 import {
   japaneseWordsTable,
@@ -91,12 +88,9 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
     return (updatedWord as JapaneseWordPrimitives) || null;
   }
 
-  async deleteJapaneseWord(id: string): Promise<DeleteResult> {
-    const result = await this.databaseService.db
+  async deleteJapaneseWord(id: string): Promise<void> {
+    await this.databaseService.db
       .delete(japaneseWordsTable)
-      .where(eq(japaneseWordsTable.id, id))
-      .returning();
-
-    return { rowsAffected: result.length };
+      .where(eq(japaneseWordsTable.id, id));
   }
 }
