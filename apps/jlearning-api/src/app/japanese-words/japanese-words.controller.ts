@@ -39,7 +39,7 @@ export class JapanesWordsController {
     const result = await this.japaneseWordService.createManyJapaneseWords(
       createManyDto.words
     );
-    return { created: result.rowsAffected };
+    return { created: result.length, words: result };
   }
 
   @Get()

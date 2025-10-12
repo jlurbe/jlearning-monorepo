@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JapaneseWord } from '@jlearning-monorepo/api-common/contexts/shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
+import { JapaneseWordPrimitives } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/entities/japanese-word';
 import {
   JapaneseWordsRepository,
-  InsertResult,
   DeleteResult,
 } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
 
@@ -15,31 +15,35 @@ export class JapaneseWordsService {
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWord> {
+  ): Promise<JapaneseWordPrimitives> {
     return this.japaneseWordRepository.createJapaneseWord(wordData);
   }
 
   async createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
-  ): Promise<InsertResult> {
+  ): Promise<JapaneseWordPrimitives[]> {
     return this.japaneseWordRepository.createManyJapaneseWords(wordsData);
   }
 
-  async getAllJapaneseWords(): Promise<JapaneseWord[]> {
+  async getAllJapaneseWords(): Promise<JapaneseWordPrimitives[]> {
     return this.japaneseWordRepository.getAllJapaneseWords();
   }
 
-  async getJapaneseWordById(id: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordById(
+    id: string
+  ): Promise<JapaneseWordPrimitives | null> {
     return this.japaneseWordRepository.getJapaneseWordById(id);
   }
 
-  async getJapaneseWordByWord(word: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordByWord(
+    word: string
+  ): Promise<JapaneseWordPrimitives | null> {
     return this.japaneseWordRepository.getJapaneseWordByWord(word);
   }
 
   async updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWord>
+    updates: Partial<JapaneseWordPrimitives>
   ): Promise<JapaneseWord | null> {
     return this.japaneseWordRepository.updateJapaneseWord(id, updates);
   }

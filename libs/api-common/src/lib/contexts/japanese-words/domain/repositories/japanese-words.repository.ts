@@ -1,4 +1,3 @@
-import { JapaneseWord } from '../../../shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
 import { JapaneseWordPrimitives } from '../entities/japanese-word';
 
@@ -17,7 +16,7 @@ export abstract class JapaneseWordsRepository {
   ): Promise<JapaneseWordPrimitives>;
   abstract createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
-  ): Promise<InsertResult>;
+  ): Promise<JapaneseWordPrimitives[]>;
   abstract getAllJapaneseWords(): Promise<JapaneseWordPrimitives[]>;
   abstract getJapaneseWordById(
     id: string

@@ -2,7 +2,6 @@ import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 import {
   JapaneseWordsRepository,
-  InsertResult,
   DeleteResult,
 } from '../../domain/repositories/japanese-words.repository';
 import { CreateJapaneseWordDto } from '../../domain/dto/create-japanese-word.dto';
@@ -34,7 +33,7 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
 
   async createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
-  ): Promise<InsertResult> {
+  ): Promise<JapaneseWordPrimitives[]> {
     try {
       const result = await this.databaseService.db
         .insert(japaneseWordsTable)
@@ -42,13 +41,10 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
         .onConflictDoNothing()
         .returning();
 
-      return {
-        rowsAffected: result.length,
-        insertId: result[0]?.id,
-      };
+      return result as JapaneseWordPrimitives[];
     } catch (error) {
       console.error('Error creating many Japanese words:', error);
-      return { rowsAffected: 0 };
+      return [];
     }
   }
 

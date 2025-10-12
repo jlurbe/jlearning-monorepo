@@ -82,11 +82,23 @@ export class AiService {
           'notes',
           'status',
         ];
-        if (validKeys.includes(key as keyof JapaneseWord)) {
-          (entry as unknown)[key] = value;
+        if (
+          validKeys.includes(key as keyof JapaneseWord) &&
+          value &&
+          value.trim() !== ''
+        ) {
+          (entry as unknown)[key] = value.trim();
         }
       });
-      entries.push(entry);
+
+      // Only add entries that have a word field
+      if (entry.word && entry.word.trim() !== '') {
+        entries.push(entry);
+      } else {
+        Logger.warn(
+          `Skipping entry without word field: ${JSON.stringify(entry)}`
+        );
+      }
     }
 
     return entries;
