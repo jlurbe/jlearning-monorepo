@@ -1,16 +1,25 @@
 import { Module } from '@nestjs/common';
-import { JapaneseWordsService } from './services/japanese-words.service';
 import { JapanesWordsController } from './japanese-words.controller';
 import { AiService } from './services/ai.service';
 import { JapaneseWordsRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
 import { JapaneseWordsDrizzleRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/infrastructure/repositories/japanese-words-drizzle.repository';
 import { DatabaseService } from '../common/database/database.service';
+import {
+  JapaneseWordsCommandService,
+  JapaneseWordsQueryService,
+  CreateJapaneseWordHandler,
+  CreateManyJapaneseWordsHandler,
+  UpdateJapaneseWordHandler,
+  DeleteJapaneseWordHandler,
+  GetAllJapaneseWordsHandler,
+  GetJapaneseWordByIdHandler,
+} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
 
 @Module({
   imports: [],
   controllers: [JapanesWordsController],
   providers: [
-    JapaneseWordsService,
+    // Infrastructure
     DatabaseService,
     {
       provide: 'IDatabaseService',
@@ -20,6 +29,22 @@ import { DatabaseService } from '../common/database/database.service';
       provide: JapaneseWordsRepository,
       useClass: JapaneseWordsDrizzleRepository,
     },
+
+    // Command Handlers
+    CreateJapaneseWordHandler,
+    CreateManyJapaneseWordsHandler,
+    UpdateJapaneseWordHandler,
+    DeleteJapaneseWordHandler,
+
+    // Query Handlers
+    GetAllJapaneseWordsHandler,
+    GetJapaneseWordByIdHandler,
+
+    // Application Services
+    JapaneseWordsCommandService,
+    JapaneseWordsQueryService,
+
+    // Other Services
     AiService,
   ],
 })

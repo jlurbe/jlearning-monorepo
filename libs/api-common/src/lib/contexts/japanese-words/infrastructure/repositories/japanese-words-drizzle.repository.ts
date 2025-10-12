@@ -67,20 +67,6 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
     return word ? new JapaneseWordEntity(word as JapaneseWordPrimitives) : null;
   }
 
-  async getJapaneseWordByWord(
-    word: string
-  ): Promise<JapaneseWordEntity | null> {
-    const [result] = await this.databaseService.db
-      .select()
-      .from(japaneseWordsTable)
-      .where(eq(japaneseWordsTable.word, word))
-      .limit(1);
-
-    return result
-      ? new JapaneseWordEntity(result as JapaneseWordPrimitives)
-      : null;
-  }
-
   async updateJapaneseWord(
     id: string,
     updates: UpdateJapaneseWordDto

@@ -11,7 +11,18 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JapaneseWordsService } from './services/japanese-words.service';
+import {
+  JapaneseWordsCommandService,
+  JapaneseWordsQueryService,
+} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
+import {
+  CreateJapaneseWordCommand,
+  CreateManyJapaneseWordsCommand,
+  UpdateJapaneseWordCommand,
+  DeleteJapaneseWordCommand,
+  GetAllJapaneseWordsQuery,
+  GetJapaneseWordByIdQuery,
+} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
 import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
 import { CreateManyJapaneseWordsDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-many-japanese-words.dto';
 import { AnalyzeTextDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/analyze-text.dto';
@@ -22,7 +33,8 @@ import { JapaneseWordPrimitives } from '../../../../../libs/api-common/src/lib/c
 @Controller('japanese-words')
 export class JapanesWordsController {
   constructor(
-    private readonly japaneseWordService: JapaneseWordsService,
+    private readonly japaneseWordsCommandService: JapaneseWordsCommandService,
+    private readonly japaneseWordsQueryService: JapaneseWordsQueryService,
     private readonly aiService: AiService
   ) {}
 
@@ -35,21 +47,52 @@ export class JapanesWordsController {
       .then((words) => words.map((word) => word as JapaneseWordPrimitives));
   }
   @Post()
-  create(
+  async create(
     @Body() createJapaneseWordDto: CreateJapaneseWordDto
   ): Promise<JapaneseWordPrimitives> {
-    return this.japaneseWordService
-      .createJapaneseWord(createJapaneseWordDto)
-      .then((word) => word.toPrimitives());
+    const command = new CreateJapaneseWordCommand(
+      createJapaneseWordDto.word,
+      createJapaneseWordDto.reading,
+      createJapaneseWordDto.translation,
+      createJapaneseWordDto.pronunciation,
+      createJapaneseWordDto.exampleSentence,
+      createJapaneseWordDto.type,
+      createJapaneseWordDto.notes,
+      createJapaneseWordDto.status,
+      createJapaneseWordDto.difficulty,
+      createJapaneseWordDto.reviewedAt
+    );
+
+    const result = await this.japaneseWordsCommandService.createJapaneseWord(
+      command
+    );
+    return result.toPrimitives();
   }
 
   @Post('batch')
   async createMany(
     @Body() createManyDto: CreateManyJapaneseWordsDto
   ): Promise<{ created: number; words: JapaneseWordPrimitives[] }> {
-    const result = await this.japaneseWordService.createManyJapaneseWords(
-      createManyDto.words
+    const commands = createManyDto.words.map(
+      (word) =>
+        new CreateJapaneseWordCommand(
+          word.word,
+          word.reading,
+          word.translation,
+          word.pronunciation,
+          word.exampleSentence,
+          word.type,
+          word.notes,
+          word.status,
+          word.difficulty,
+          word.reviewedAt
+        )
     );
+
+    const command = new CreateManyJapaneseWordsCommand(commands);
+    const result =
+      await this.japaneseWordsCommandService.createManyJapaneseWords(command);
+
     return {
       created: result.length,
       words: result.map((word) => word.toPrimitives()),
@@ -58,16 +101,21 @@ export class JapanesWordsController {
 
   @Get()
   async findAll(): Promise<JapaneseWordPrimitives[]> {
-    return this.japaneseWordService
-      .getAllJapaneseWords()
-      .then((words) => words.map((word) => word.toPrimitives()));
+    const query = new GetAllJapaneseWordsQuery();
+    const result = await this.japaneseWordsQueryService.getAllJapaneseWords(
+      query
+    );
+    return result.map((word) => word.toPrimitives());
   }
 
   @Get(':id')
   async findOne(
     @Param('id', ParseUUIDPipe) id: string
   ): Promise<JapaneseWordPrimitives> {
-    const word = await this.japaneseWordService.getJapaneseWordById(id);
+    const query = new GetJapaneseWordByIdQuery(id);
+    const word = await this.japaneseWordsQueryService.getJapaneseWordById(
+      query
+    );
     if (!word) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
@@ -79,10 +127,22 @@ export class JapanesWordsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateJapaneseWordDto: UpdateJapaneseWordDto
   ): Promise<JapaneseWordPrimitives> {
-    const updatedWord = await this.japaneseWordService.updateJapaneseWord(
+    const command = new UpdateJapaneseWordCommand(
       id,
-      updateJapaneseWordDto
+      updateJapaneseWordDto.word,
+      updateJapaneseWordDto.reading,
+      updateJapaneseWordDto.translation,
+      updateJapaneseWordDto.pronunciation,
+      updateJapaneseWordDto.exampleSentence,
+      updateJapaneseWordDto.type,
+      updateJapaneseWordDto.notes,
+      updateJapaneseWordDto.status,
+      updateJapaneseWordDto.difficulty,
+      updateJapaneseWordDto.reviewedAt
     );
+
+    const updatedWord =
+      await this.japaneseWordsCommandService.updateJapaneseWord(command);
     if (!updatedWord) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
@@ -92,6 +152,7 @@ export class JapanesWordsController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.japaneseWordService.deleteJapaneseWord(id);
+    const command = new DeleteJapaneseWordCommand(id);
+    await this.japaneseWordsCommandService.deleteJapaneseWord(command);
   }
 }

@@ -11,9 +11,6 @@ export abstract class JapaneseWordsRepository {
   ): Promise<JapaneseWordEntity[]>;
   abstract getAllJapaneseWords(): Promise<JapaneseWordEntity[]>;
   abstract getJapaneseWordById(id: string): Promise<JapaneseWordEntity | null>;
-  abstract getJapaneseWordByWord(
-    word: string
-  ): Promise<JapaneseWordEntity | null>;
   abstract updateJapaneseWord(
     id: string,
     updates: UpdateJapaneseWordDto
