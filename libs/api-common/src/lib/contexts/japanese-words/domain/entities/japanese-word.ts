@@ -5,19 +5,17 @@ import {
   WordType as WordTypeEnum,
   JapaneseWord,
 } from '../../../shared/domain/japanese-word.type';
-import {
-  Id,
-  Word,
-  Reading,
-  Translation,
-  Pronunciation,
-  ExampleSentence,
-  WordType,
-  DifficultyLevel,
-  StudyStatus,
-  Notes,
-  ReviewedAt,
-} from '../value-objects';
+import { Id } from '../value-objects/id.js';
+import { Word } from '../value-objects/word.js';
+import { Reading } from '../value-objects/reading.js';
+import { Translation } from '../value-objects/translation.js';
+import { Pronunciation } from '../value-objects/pronunciation.js';
+import { ExampleSentence } from '../value-objects/example-sentence.js';
+import { WordType } from '../value-objects/word-type.js';
+import { DifficultyLevel } from '../value-objects/difficulty-level.js';
+import { StudyStatus } from '../value-objects/study-status.js';
+import { Notes } from '../value-objects/notes.js';
+import { ReviewedAt } from '../value-objects/reviewed-at.js';
 
 export class JapaneseWordPrimitives implements JapaneseWord {
   id?: string;

@@ -11,23 +11,19 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  JapaneseWordsCommandService,
-  JapaneseWordsQueryService,
-} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
-import {
-  CreateJapaneseWordCommand,
-  CreateManyJapaneseWordsCommand,
-  UpdateJapaneseWordCommand,
-  DeleteJapaneseWordCommand,
-  GetAllJapaneseWordsQuery,
-  GetJapaneseWordByIdQuery,
-} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
+import { JapaneseWordsCommandService } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/services/japanese-words-command.service';
+import { JapaneseWordsQueryService } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/services/japanese-words-query.service';
+import { CreateJapaneseWordCommand } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/commands/create-japanese-word.command';
+import { CreateManyJapaneseWordsCommand } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/commands/create-many-japanese-words.command';
+import { UpdateJapaneseWordCommand } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/commands/update-japanese-word.command';
+import { DeleteJapaneseWordCommand } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/commands/delete-japanese-word.command';
+import { GetAllJapaneseWordsQuery } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/queries/get-all-japanese-words.query';
+import { GetJapaneseWordByIdQuery } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/queries/get-japanese-word-by-id.query';
 import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
 import { CreateManyJapaneseWordsDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-many-japanese-words.dto';
 import { AnalyzeTextDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/analyze-text.dto';
 import { UpdateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/update-japanese-word.dto';
-import { AiVocabularyService } from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
+import { AiVocabularyService } from '@jlearning-monorepo/api-common/contexts/japanese-words/application/services/ai-vocabulary.service';
 import { JapaneseWordPrimitives } from '../../../../../libs/api-common/src/lib/contexts/japanese-words/domain/entities/japanese-word';
 
 @Controller('japanese-words')
