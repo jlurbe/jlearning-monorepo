@@ -27,7 +27,7 @@ import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/j
 import { CreateManyJapaneseWordsDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-many-japanese-words.dto';
 import { AnalyzeTextDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/analyze-text.dto';
 import { UpdateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/update-japanese-word.dto';
-import { AiService } from './services/ai.service';
+import { AiVocabularyService } from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
 import { JapaneseWordPrimitives } from '../../../../../libs/api-common/src/lib/contexts/japanese-words/domain/entities/japanese-word';
 
 @Controller('japanese-words')
@@ -35,15 +35,15 @@ export class JapanesWordsController {
   constructor(
     private readonly japaneseWordsCommandService: JapaneseWordsCommandService,
     private readonly japaneseWordsQueryService: JapaneseWordsQueryService,
-    private readonly aiService: AiService
+    private readonly aiVocabularyService: AiVocabularyService
   ) {}
 
   @Post('analyze')
   analyzeText(
     @Body() analyzeTextDto: AnalyzeTextDto
   ): Promise<JapaneseWordPrimitives[]> {
-    return this.aiService
-      .getVocabularyFromText(analyzeTextDto.text)
+    return this.aiVocabularyService
+      .extractVocabularyFromText(analyzeTextDto.text)
       .then((words) => words.map((word) => word as JapaneseWordPrimitives));
   }
   @Post()

@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { JapanesWordsController } from './japanese-words.controller';
-import { AiService } from './services/ai.service';
 import { JapaneseWordsRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/repositories/japanese-words.repository';
 import { JapaneseWordsDrizzleRepository } from '@jlearning-monorepo/api-common/contexts/japanese-words/infrastructure/repositories/japanese-words-drizzle.repository';
+import { AiVocabularyExtractorPort } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/ports/ai-vocabulary-extractor.port';
+import { GoogleGeminiAiAdapter } from '@jlearning-monorepo/api-common/contexts/japanese-words/infrastructure/adapters';
 import { DatabaseService } from '../common/database/database.service';
 import {
   JapaneseWordsCommandService,
   JapaneseWordsQueryService,
+  AiVocabularyService,
   CreateJapaneseWordHandler,
   CreateManyJapaneseWordsHandler,
   UpdateJapaneseWordHandler,
@@ -29,6 +31,10 @@ import {
       provide: JapaneseWordsRepository,
       useClass: JapaneseWordsDrizzleRepository,
     },
+    {
+      provide: AiVocabularyExtractorPort,
+      useClass: GoogleGeminiAiAdapter,
+    },
 
     // Command Handlers
     CreateJapaneseWordHandler,
@@ -43,9 +49,7 @@ import {
     // Application Services
     JapaneseWordsCommandService,
     JapaneseWordsQueryService,
-
-    // Other Services
-    AiService,
+    AiVocabularyService,
   ],
 })
 export class JapaneseWordsModule {}
