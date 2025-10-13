@@ -140,7 +140,26 @@ export function VocabularyTable({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | null>(null);
 
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [showNewRow, setShowNewRow] = useState(false);
+  const [showAddWordModal, setShowAddWordModal] = useState(false);
+
+  // Handle body scroll lock when modal is open
+  useEffect(() => {
+    if (showAddWordModal) {
+      // Add classes to prevent scrolling and remove margins
+      document.body.classList.add('modal-open');
+      document.documentElement.classList.add('modal-open');
+    } else {
+      // Remove the classes
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('modal-open');
+      document.documentElement.classList.remove('modal-open');
+    };
+  }, [showAddWordModal]);
   const [newEntry, setNewEntry] = useState<
     Omit<JapaneseWord, 'id' | 'createdAt' | 'updatedAt'>
   >({
@@ -422,8 +441,8 @@ export function VocabularyTable({
           reviewedAt: null,
         }));
         onAddMultiple(formattedResults);
-        // Clear the input and hide the new row form
-        setShowNewRow(false);
+        // Clear the input and hide the modal
+        setShowAddWordModal(false);
         setNewEntry({
           word: '',
           reading: '',
@@ -599,7 +618,7 @@ export function VocabularyTable({
     (t): t is WordType => Boolean(t)
   );
 
-  if (entries.length === 0 && !showNewRow) {
+  if (entries.length === 0) {
     return (
       <div className="text-center py-12 animate-fade-in">
         <p className="text-muted-foreground text-lg">
@@ -609,7 +628,7 @@ export function VocabularyTable({
           Add your first Japanese word to get started!
         </p>
         <Button
-          onClick={() => setShowNewRow(true)}
+          onClick={() => setShowAddWordModal(true)}
           className="flex items-center gap-2 mx-auto"
         >
           <Plus className="h-4 w-4" />
@@ -703,7 +722,7 @@ export function VocabularyTable({
         </Button>
 
         <Button
-          onClick={() => setShowNewRow(true)}
+          onClick={() => setShowAddWordModal(true)}
           className="flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
@@ -868,56 +887,10 @@ export function VocabularyTable({
               </th>
               <th className="text-left px-0.5 py-1 font-semibold">Status</th>
               {/* Actions column only */}
-              <th
-                className="text-center px-1 py-1 font-semibold"
-                style={{ minWidth: 60 }}
-              >
-                Actions
-              </th>
+              <th className="text-center px-1 py-1 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {showNewRow && (
-              <tr className="border-b bg-muted/20 animate-slide-down">
-                <td className="p-3" colSpan={9}>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={newEntry.word}
-                      onChange={(e) =>
-                        setNewEntry({ ...newEntry, word: e.target.value })
-                      }
-                      onKeyDown={handleNewEntryKeyDown}
-                      placeholder="Enter word or sentence..."
-                      className="h-8 flex-grow"
-                    />
-                  </div>
-                </td>
-                <td className="p-3">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      className="h-8 w-20 whitespace-nowrap text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
-                      onClick={handleAiFill}
-                      disabled={isAiLoading}
-                    >
-                      {isAiLoading ? (
-                        <Sparkles className="h-4 w-4 animate-pulse" />
-                      ) : (
-                        'AI Save'
-                      )}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowNewRow(false)}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            )}
-
             {paginatedEntries.map((entry, index) => (
               <tr
                 key={entry.id}
@@ -1032,6 +1005,72 @@ export function VocabularyTable({
             >
               Next
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Add Word Modal */}
+      {showAddWordModal && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowAddWordModal(false);
+            }
+          }}
+        >
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background border rounded-lg p-6 w-96 max-w-[calc(100vw-2rem)]">
+            <h3 className="text-lg font-semibold mb-4">Add New Word</h3>
+
+            <div>
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Word or Sentence
+                </label>
+                <Input
+                  value={newEntry.word}
+                  onChange={(e) =>
+                    setNewEntry({ ...newEntry, word: e.target.value })
+                  }
+                  onKeyDown={handleNewEntryKeyDown}
+                  placeholder="Enter word or sentence..."
+                  className="w-full"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 justify-end mt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddWordModal(false);
+                    setNewEntry({
+                      word: '',
+                      reading: '',
+                      translation: '',
+                      pronunciation: '',
+                      exampleSentence: '',
+                      type: WordType.NOUN,
+                      difficulty: DifficultyLevel.BEGINNER,
+                      status: StudyStatus.NEW,
+                      notes: '',
+                    });
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="h-8 w-20 whitespace-nowrap text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                  onClick={handleAiFill}
+                  disabled={isAiLoading}
+                >
+                  {isAiLoading ? (
+                    <Sparkles className="h-4 w-4 animate-pulse" />
+                  ) : (
+                    'AI Save'
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       )}
