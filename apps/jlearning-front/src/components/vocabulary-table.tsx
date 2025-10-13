@@ -1062,7 +1062,7 @@ export function VocabularyTable({
                   className="w-full h-12 text-base border-2 focus:border-purple-500 transition-colors"
                   style={{ margin: 0 }}
                 />
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-xs text-muted-foreground mt-2 mb-4">
                   Press Enter or click AI Save to analyze with AI
                 </p>
               </div>
