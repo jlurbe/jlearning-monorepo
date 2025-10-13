@@ -1,17 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import {
-  JapaneseWordsRepository,
-  InsertResult,
-  DeleteResult,
-} from '../../domain/repositories/japanese-words.repository';
+import { JapaneseWordsRepository } from '../../domain/repositories/japanese-words.repository';
 import { CreateJapaneseWordDto } from '../../domain/dto/create-japanese-word.dto';
-import {
-  japaneseWordsTable,
-  JapaneseWord,
-  NewJapaneseWord,
-} from '../schema/japanese-words.schema';
+import { japaneseWordsTable } from '../schema/japanese-words.schema';
 import { IDatabaseService } from '../../../shared/domain/database.interface';
+import {
+  JapaneseWordEntity,
+  JapaneseWordPrimitives,
+} from '../../domain/entities/japanese-word';
+import { UpdateJapaneseWordDto } from '../../domain/dto/update-japanese-word.dto';
 
 @Injectable()
 export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
@@ -22,80 +19,72 @@ export class JapaneseWordsDrizzleRepository implements JapaneseWordsRepository {
 
   async createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWord> {
+  ): Promise<JapaneseWordEntity> {
     const [newWord] = await this.databaseService.db
       .insert(japaneseWordsTable)
-      .values(wordData as NewJapaneseWord)
+      .values(wordData)
       .returning();
 
-    return newWord as JapaneseWord;
+    return new JapaneseWordEntity(newWord as JapaneseWordPrimitives);
   }
 
   async createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
-  ): Promise<InsertResult> {
+  ): Promise<JapaneseWordEntity[]> {
     try {
       const result = await this.databaseService.db
         .insert(japaneseWordsTable)
-        .values(wordsData as NewJapaneseWord[])
+        .values(wordsData)
         .onConflictDoNothing()
         .returning();
 
-      return {
-        rowsAffected: result.length,
-        insertId: result[0]?.id,
-      };
+      return result.map(
+        (word) => new JapaneseWordEntity(word as JapaneseWordPrimitives)
+      );
     } catch (error) {
       console.error('Error creating many Japanese words:', error);
-      return { rowsAffected: 0 };
+      return [];
     }
   }
 
-  async getAllJapaneseWords(): Promise<JapaneseWord[]> {
-    return this.databaseService.db
+  async getAllJapaneseWords(): Promise<JapaneseWordEntity[]> {
+    const result = await this.databaseService.db
       .select()
-      .from(japaneseWordsTable) as unknown as JapaneseWord[];
+      .from(japaneseWordsTable);
+
+    return result.map(
+      (word) => new JapaneseWordEntity(word as JapaneseWordPrimitives)
+    );
   }
 
-  async getJapaneseWordById(id: string): Promise<JapaneseWord | null> {
+  async getJapaneseWordById(id: string): Promise<JapaneseWordEntity | null> {
     const [word] = await this.databaseService.db
       .select()
       .from(japaneseWordsTable)
       .where(eq(japaneseWordsTable.id, id))
       .limit(1);
 
-    return (word as JapaneseWord) || null;
-  }
-
-  async getJapaneseWordByWord(word: string): Promise<JapaneseWord | null> {
-    const [result] = await this.databaseService.db
-      .select()
-      .from(japaneseWordsTable)
-      .where(eq(japaneseWordsTable.word, word))
-      .limit(1);
-
-    return (result as JapaneseWord) || null;
+    return word ? new JapaneseWordEntity(word as JapaneseWordPrimitives) : null;
   }
 
   async updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWord>
-  ): Promise<JapaneseWord | null> {
+    updates: UpdateJapaneseWordDto
+  ): Promise<JapaneseWordEntity | null> {
     const [updatedWord] = await this.databaseService.db
       .update(japaneseWordsTable)
       .set(updates)
       .where(eq(japaneseWordsTable.id, id))
       .returning();
 
-    return (updatedWord as JapaneseWord) || null;
+    return updatedWord
+      ? new JapaneseWordEntity(updatedWord as JapaneseWordPrimitives)
+      : null;
   }
 
-  async deleteJapaneseWord(id: string): Promise<DeleteResult> {
-    const result = await this.databaseService.db
+  async deleteJapaneseWord(id: string): Promise<void> {
+    await this.databaseService.db
       .delete(japaneseWordsTable)
-      .where(eq(japaneseWordsTable.id, id))
-      .returning();
-
-    return { rowsAffected: result.length };
+      .where(eq(japaneseWordsTable.id, id));
   }
 }

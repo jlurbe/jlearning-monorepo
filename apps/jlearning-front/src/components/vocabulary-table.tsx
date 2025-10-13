@@ -332,7 +332,7 @@ export function VocabularyTable({
     field: K,
     currentValue: JapaneseWord[K]
   ) => {
-    if (field === 'createdAt' || field === 'updatedAt' || field === 'id')
+    if (field === 'id')
       return;
     setEditingCell({ rowId, field });
     setEditValue(String(currentValue));
@@ -414,7 +414,7 @@ export function VocabularyTable({
           translation: result.translation || '',
           pronunciation: result.pronunciation || '',
           exampleSentence: result.exampleSentence || '',
-          type: result.type || WordType.NOUN,
+          type: result.type || WordType.OTHER,
           difficulty: result.difficulty || DifficultyLevel.BEGINNER,
           status: result.status || StudyStatus.NEW,
           notes: result.notes || '',
@@ -463,7 +463,7 @@ export function VocabularyTable({
           open={true}
           onOpenChange={handleOpenChange}
           value={editValue}
-          onValueChange={(val) => handleDropdownChange(val, entry.id, field)}
+          onValueChange={(val) => handleDropdownChange(val, entry?.id || '', field)}
         >
           <SelectTrigger className="h-8">
             <SelectValue />
@@ -501,7 +501,7 @@ export function VocabularyTable({
     return (
       <Badge
         className={`cursor-pointer hover:opacity-80 ${badgeColor}`}
-        onClick={() => handleCellClick(entry.id, field, value)}
+        onClick={() => handleCellClick(entry?.id || '', field, value)}
       >
         {displayValue}
       </Badge>
@@ -532,7 +532,7 @@ export function VocabularyTable({
     return (
       <div
         className="cursor-pointer hover:bg-muted/50 p-1 rounded min-h-[2rem] flex items-center"
-        onClick={() => handleCellClick(entry.id, field, value)}
+        onClick={() => handleCellClick(entry?.id || '', field, value)}
       >
         {String(value)}
       </div>
@@ -990,7 +990,7 @@ export function VocabularyTable({
                   <Button
                     size="icon"
                     variant="outline"
-                    onClick={() => onDelete(entry.id)}
+                    onClick={() => onDelete(entry?.id || '')}
                     className="text-destructive hover:text-destructive h-7 w-7 hover:scale-110 transition-transform"
                     title="Delete"
                   >

@@ -1,28 +1,19 @@
-import { JapaneseWord } from '../../../shared/domain/japanese-word.type';
 import { CreateJapaneseWordDto } from '../dto/create-japanese-word.dto';
-
-export interface InsertResult {
-  insertId?: string;
-  rowsAffected: number;
-}
-
-export interface DeleteResult {
-  rowsAffected: number;
-}
+import { UpdateJapaneseWordDto } from '../dto/update-japanese-word.dto';
+import { JapaneseWordEntity } from '../entities/japanese-word';
 
 export abstract class JapaneseWordsRepository {
   abstract createJapaneseWord(
     wordData: CreateJapaneseWordDto
-  ): Promise<JapaneseWord>;
+  ): Promise<JapaneseWordEntity>;
   abstract createManyJapaneseWords(
     wordsData: CreateJapaneseWordDto[]
-  ): Promise<InsertResult>;
-  abstract getAllJapaneseWords(): Promise<JapaneseWord[]>;
-  abstract getJapaneseWordById(id: string): Promise<JapaneseWord | null>;
-  abstract getJapaneseWordByWord(word: string): Promise<JapaneseWord | null>;
+  ): Promise<JapaneseWordEntity[]>;
+  abstract getAllJapaneseWords(): Promise<JapaneseWordEntity[]>;
+  abstract getJapaneseWordById(id: string): Promise<JapaneseWordEntity | null>;
   abstract updateJapaneseWord(
     id: string,
-    updates: Partial<JapaneseWord>
-  ): Promise<JapaneseWord | null>;
-  abstract deleteJapaneseWord(id: string): Promise<DeleteResult>;
+    updates: UpdateJapaneseWordDto
+  ): Promise<JapaneseWordEntity | null>;
+  abstract deleteJapaneseWord(id: string): Promise<void>;
 }

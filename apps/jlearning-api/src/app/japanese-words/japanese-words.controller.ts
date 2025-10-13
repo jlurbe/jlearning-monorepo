@@ -11,72 +11,148 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JapaneseWordsService } from './services/japanese-words.service';
+import {
+  JapaneseWordsCommandService,
+  JapaneseWordsQueryService,
+} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
+import {
+  CreateJapaneseWordCommand,
+  CreateManyJapaneseWordsCommand,
+  UpdateJapaneseWordCommand,
+  DeleteJapaneseWordCommand,
+  GetAllJapaneseWordsQuery,
+  GetJapaneseWordByIdQuery,
+} from '@jlearning-monorepo/api-common/contexts/japanese-words/application';
 import { CreateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-japanese-word.dto';
 import { CreateManyJapaneseWordsDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/create-many-japanese-words.dto';
 import { AnalyzeTextDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/analyze-text.dto';
 import { UpdateJapaneseWordDto } from '@jlearning-monorepo/api-common/contexts/japanese-words/domain/dto/update-japanese-word.dto';
 import { AiService } from './services/ai.service';
+import { JapaneseWordPrimitives } from '../../../../../libs/api-common/src/lib/contexts/japanese-words/domain/entities/japanese-word';
 
 @Controller('japanese-words')
 export class JapanesWordsController {
   constructor(
-    private readonly japaneseWordService: JapaneseWordsService,
+    private readonly japaneseWordsCommandService: JapaneseWordsCommandService,
+    private readonly japaneseWordsQueryService: JapaneseWordsQueryService,
     private readonly aiService: AiService
   ) {}
 
   @Post('analyze')
-  analyzeText(@Body() analyzeTextDto: AnalyzeTextDto) {
-    return this.aiService.getVocabularyFromText(analyzeTextDto.text);
+  analyzeText(
+    @Body() analyzeTextDto: AnalyzeTextDto
+  ): Promise<JapaneseWordPrimitives[]> {
+    return this.aiService
+      .getVocabularyFromText(analyzeTextDto.text)
+      .then((words) => words.map((word) => word as JapaneseWordPrimitives));
   }
   @Post()
-  create(@Body() createJapaneseWordDto: CreateJapaneseWordDto) {
-    return this.japaneseWordService.createJapaneseWord(createJapaneseWordDto);
+  async create(
+    @Body() createJapaneseWordDto: CreateJapaneseWordDto
+  ): Promise<JapaneseWordPrimitives> {
+    const command = new CreateJapaneseWordCommand(
+      createJapaneseWordDto.word,
+      createJapaneseWordDto.reading,
+      createJapaneseWordDto.translation,
+      createJapaneseWordDto.pronunciation,
+      createJapaneseWordDto.exampleSentence,
+      createJapaneseWordDto.type,
+      createJapaneseWordDto.notes,
+      createJapaneseWordDto.status,
+      createJapaneseWordDto.difficulty,
+      createJapaneseWordDto.reviewedAt
+    );
+
+    const result = await this.japaneseWordsCommandService.createJapaneseWord(
+      command
+    );
+    return result.toPrimitives();
   }
 
   @Post('batch')
-  async createMany(@Body() createManyDto: CreateManyJapaneseWordsDto) {
-    const result = await this.japaneseWordService.createManyJapaneseWords(
-      createManyDto.words
+  async createMany(
+    @Body() createManyDto: CreateManyJapaneseWordsDto
+  ): Promise<{ created: number; words: JapaneseWordPrimitives[] }> {
+    const commands = createManyDto.words.map(
+      (word) =>
+        new CreateJapaneseWordCommand(
+          word.word,
+          word.reading,
+          word.translation,
+          word.pronunciation,
+          word.exampleSentence,
+          word.type,
+          word.notes,
+          word.status,
+          word.difficulty,
+          word.reviewedAt
+        )
     );
-    return { created: result.rowsAffected };
+
+    const command = new CreateManyJapaneseWordsCommand(commands);
+    const result =
+      await this.japaneseWordsCommandService.createManyJapaneseWords(command);
+
+    return {
+      created: result.length,
+      words: result.map((word) => word.toPrimitives()),
+    };
   }
 
   @Get()
-  findAll() {
-    return this.japaneseWordService.getAllJapaneseWords();
+  async findAll(): Promise<JapaneseWordPrimitives[]> {
+    const query = new GetAllJapaneseWordsQuery();
+    const result = await this.japaneseWordsQueryService.getAllJapaneseWords(
+      query
+    );
+    return result.map((word) => word.toPrimitives());
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const word = await this.japaneseWordService.getJapaneseWordById(id);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string
+  ): Promise<JapaneseWordPrimitives> {
+    const query = new GetJapaneseWordByIdQuery(id);
+    const word = await this.japaneseWordsQueryService.getJapaneseWordById(
+      query
+    );
     if (!word) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
-    return word;
+    return word.toPrimitives();
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateJapaneseWordDto: UpdateJapaneseWordDto
-  ) {
-    const updatedWord = await this.japaneseWordService.updateJapaneseWord(
+  ): Promise<JapaneseWordPrimitives> {
+    const command = new UpdateJapaneseWordCommand(
       id,
-      updateJapaneseWordDto
+      updateJapaneseWordDto.word,
+      updateJapaneseWordDto.reading,
+      updateJapaneseWordDto.translation,
+      updateJapaneseWordDto.pronunciation,
+      updateJapaneseWordDto.exampleSentence,
+      updateJapaneseWordDto.type,
+      updateJapaneseWordDto.notes,
+      updateJapaneseWordDto.status,
+      updateJapaneseWordDto.difficulty,
+      updateJapaneseWordDto.reviewedAt
     );
+
+    const updatedWord =
+      await this.japaneseWordsCommandService.updateJapaneseWord(command);
     if (!updatedWord) {
       throw new NotFoundException(`Word with ID ${id} not found`);
     }
-    return updatedWord;
+    return updatedWord.toPrimitives();
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
-    const result = await this.japaneseWordService.deleteJapaneseWord(id);
-    if (result.rowsAffected === 0) {
-      throw new NotFoundException(`Word with ID ${id} not found`);
-    }
+    const command = new DeleteJapaneseWordCommand(id);
+    await this.japaneseWordsCommandService.deleteJapaneseWord(command);
   }
 }

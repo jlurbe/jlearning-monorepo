@@ -15,7 +15,7 @@ import {
 export class CreateJapaneseWordDto {
   @IsString()
   @IsNotEmpty()
-  word?: string;
+  word!: string;
 
   @IsString()
   @IsOptional()
