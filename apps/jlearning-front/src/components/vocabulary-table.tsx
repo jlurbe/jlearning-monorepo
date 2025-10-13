@@ -1070,7 +1070,7 @@ export function VocabularyTable({
               {/* Buttons */}
               <div
                 className="flex items-center gap-3 justify-end"
-                style={{ marginTop: '2rem', margin: 0 }}
+                style={{ marginTop: '1rem', margin: 0 }}
               >
                 <Button
                   variant="outline"
@@ -1093,7 +1093,7 @@ export function VocabularyTable({
                   Cancel
                 </Button>
                 <Button
-                  className="h-11 px-6 font-semibold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
+                  className="h-11 w-32 font-semibold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                   onClick={handleAiFill}
                   disabled={isAiLoading || !newEntry.word.trim()}
                 >
