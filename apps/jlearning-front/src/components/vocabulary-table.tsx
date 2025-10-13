@@ -91,9 +91,45 @@ export function VocabularyTable({
       );
     }
   }, [visibleColumns]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<WordType | 'all'>('all');
-  const [filterStatus, setFilterStatus] = useState<StudyStatus | 'all'>('all');
+  // Initialize filters from URL parameters
+  const getInitialSearchTerm = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('q') || '';
+  };
+
+  const getInitialFilterType = () => {
+    const params = new URLSearchParams(window.location.search);
+    const typeParam = params.get('type');
+    if (
+      typeParam &&
+      (typeParam === 'all' ||
+        Object.values(WordType).includes(typeParam as WordType))
+    ) {
+      return typeParam as WordType | 'all';
+    }
+    return 'all';
+  };
+
+  const getInitialFilterStatus = () => {
+    const params = new URLSearchParams(window.location.search);
+    const statusParam = params.get('status');
+    if (
+      statusParam &&
+      (statusParam === 'all' ||
+        Object.values(StudyStatus).includes(statusParam as StudyStatus))
+    ) {
+      return statusParam as StudyStatus | 'all';
+    }
+    return 'all';
+  };
+
+  const [searchTerm, setSearchTerm] = useState(getInitialSearchTerm);
+  const [filterType, setFilterType] = useState<WordType | 'all'>(
+    getInitialFilterType
+  );
+  const [filterStatus, setFilterStatus] = useState<StudyStatus | 'all'>(
+    getInitialFilterStatus
+  );
   const [editingCell, setEditingCell] = useState<EditingCell | null>(null);
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -120,9 +156,26 @@ export function VocabularyTable({
     reviewedAt: null,
   });
 
+  // Initialize pagination state from URL parameters
+  const getInitialPageSize = () => {
+    const params = new URLSearchParams(window.location.search);
+    const urlPageSize = params.get('pageSize');
+    if (urlPageSize === 'all') return 1000;
+    if (urlPageSize && !isNaN(Number(urlPageSize))) return Number(urlPageSize);
+    return 10;
+  };
+
+  const getInitialCurrentPage = () => {
+    const params = new URLSearchParams(window.location.search);
+    const urlCurrentPage = params.get('page');
+    if (urlCurrentPage && !isNaN(Number(urlCurrentPage)))
+      return Number(urlCurrentPage);
+    return 1;
+  };
+
   // Pagination state
-  const [pageSize, setPageSize] = useState<number>(10);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(getInitialPageSize);
+  const [currentPage, setCurrentPage] = useState<number>(getInitialCurrentPage);
 
   // Helper to format enum values for display (e.g., 'NEW' -> 'Not Learned')
   const formatEnumValue = (value: string) => {
@@ -157,11 +210,6 @@ export function VocabularyTable({
           return 0;
         })
       : filteredEntries;
-
-  // Reset to first page when filters/search/page size change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, filterType, filterStatus, pageSize]);
 
   // Compute pagination
   const totalPages = Math.max(1, Math.ceil(sortedEntries.length / pageSize));
@@ -239,101 +287,54 @@ export function VocabularyTable({
     return () => document.removeEventListener('paste', handleGlobalPaste);
   }, [handleMultiColumnPaste]);
 
-  // URL-only persistence for filters, search, page size, and current page
+  // Sync all state to URL whenever it changes
   useEffect(() => {
-    // Initialize from URL on mount
-    const params = new URLSearchParams(window.location.search);
-    const q = params.get('q');
-    if (q !== null) setSearchTerm(q);
-
-    const typeParam = params.get('type');
-    if (
-      typeParam &&
-      (typeParam === 'all' ||
-        (Object.values(WordType) as string[]).includes(typeParam))
-    ) {
-      setFilterType(typeParam as WordType | 'all');
-    }
-
-    const statusParam = params.get('status');
-    if (
-      statusParam &&
-      (statusParam === 'all' ||
-        (Object.values(StudyStatus) as string[]).includes(statusParam))
-    ) {
-      setFilterStatus(statusParam as StudyStatus | 'all');
-    }
-
-    const pageSizeParam = params.get('pageSize');
-    if (pageSizeParam === 'all') {
-      setPageSize(filteredEntries.length || 1);
-    } else if (pageSizeParam && !isNaN(Number(pageSizeParam))) {
-      setPageSize(Number(pageSizeParam));
-    }
-
-    const pageParam = params.get('page');
-    if (pageParam && !isNaN(Number(pageParam))) {
-      setCurrentPage(Number(pageParam));
-    }
-    // Note: We do not add a popstate listener here; app-level routing can handle that if needed
-  }, []);
-
-  useEffect(() => {
-    // Sync current filters, page size, and page to URL without reloading the page
     const url = new URL(window.location.href);
     const params = url.searchParams;
 
-    // search term
+    // Update search term
     if (searchTerm) {
       params.set('q', searchTerm);
     } else {
       params.delete('q');
     }
 
-    // type
+    // Update filter type
     if (filterType && filterType !== 'all') {
       params.set('type', String(filterType));
     } else {
       params.delete('type');
     }
 
-    // status
+    // Update filter status
     if (filterStatus && filterStatus !== 'all') {
       params.set('status', String(filterStatus));
     } else {
       params.delete('status');
     }
 
-    // page size
-    if (pageSize === filteredEntries.length && filteredEntries.length > 0) {
+    // Update page size
+    if (pageSize >= 1000) {
       params.set('pageSize', 'all');
     } else {
       params.set('pageSize', String(pageSize));
     }
 
-    // current page
+    // Update current page
     params.set('page', String(currentPage));
 
     const newUrl = `${url.pathname}${
       params.toString() ? `?${params.toString()}` : ''
     }${url.hash}`;
     window.history.replaceState({}, '', newUrl);
-  }, [
-    searchTerm,
-    filterType,
-    filterStatus,
-    pageSize,
-    currentPage,
-    filteredEntries.length,
-  ]);
+  }, [searchTerm, filterType, filterStatus, pageSize, currentPage]);
 
   const handleCellClick = <K extends keyof JapaneseWord>(
     rowId: string,
     field: K,
     currentValue: JapaneseWord[K]
   ) => {
-    if (field === 'id')
-      return;
+    if (field === 'id') return;
     setEditingCell({ rowId, field });
     setEditValue(String(currentValue));
   };
@@ -463,7 +464,9 @@ export function VocabularyTable({
           open={true}
           onOpenChange={handleOpenChange}
           value={editValue}
-          onValueChange={(val) => handleDropdownChange(val, entry?.id || '', field)}
+          onValueChange={(val) =>
+            handleDropdownChange(val, entry?.id || '', field)
+          }
         >
           <SelectTrigger className="h-8">
             <SelectValue />
@@ -669,19 +672,14 @@ export function VocabularyTable({
 
         {/* Page size selector */}
         <Select
-          value={
-            pageSize === filteredEntries.length && filteredEntries.length > 0
-              ? 'all'
-              : String(pageSize)
-          }
+          value={pageSize >= 1000 ? 'all' : String(pageSize)}
           onValueChange={(v) => {
             if (v === 'all') {
-              setPageSize(filteredEntries.length || 1);
-              setCurrentPage(1);
+              setPageSize(1000);
             } else {
               setPageSize(Number(v));
-              setCurrentPage(1);
             }
+            setCurrentPage(1);
           }}
         >
           <SelectTrigger className="w-full sm:w-32">
