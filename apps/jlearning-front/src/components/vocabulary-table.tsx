@@ -1012,19 +1012,44 @@ export function VocabularyTable({
       {/* Add Word Modal */}
       {showAddWordModal && (
         <div
-          className="fixed inset-0 bg-black/50 z-50"
+          className="fixed inset-0 bg-black/50 z-50 animate-in fade-in-0 duration-300"
+          style={{ margin: 0, padding: 0 }}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setShowAddWordModal(false);
             }
           }}
         >
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background border rounded-lg p-6 w-96 max-w-[calc(100vw-2rem)]">
-            <h3 className="text-lg font-semibold mb-4">Add New Word</h3>
-
-            <div>
+          <div
+            className="bg-background border rounded-xl shadow-2xl w-96 max-w-[calc(100vw-2rem)] animate-in zoom-in-95 fade-in-0 duration-300"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              margin: 0,
+              padding: '2rem',
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center">
+                <Plus className="h-5 w-5 text-white" />
+              </div>
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <h3 className="text-xl font-semibold text-foreground">
+                  Add New Word
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Enter a Japanese word or sentence
+                </p>
+              </div>
+            </div>
+
+            {/* Form */}
+            <div style={{ margin: 0 }}>
+              <div style={{ margin: 0 }}>
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Word or Sentence
                 </label>
                 <Input
@@ -1033,14 +1058,23 @@ export function VocabularyTable({
                     setNewEntry({ ...newEntry, word: e.target.value })
                   }
                   onKeyDown={handleNewEntryKeyDown}
-                  placeholder="Enter word or sentence..."
-                  className="w-full"
+                  placeholder="例: こんにちは (Hello)"
+                  className="w-full h-12 text-base border-2 focus:border-purple-500 transition-colors"
+                  style={{ margin: 0 }}
                 />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Press Enter or click AI Save to analyze with AI
+                </p>
               </div>
 
-              <div className="flex items-center gap-2 justify-end mt-4">
+              {/* Buttons */}
+              <div
+                className="flex items-center gap-3 justify-end"
+                style={{ marginTop: '2rem', margin: 0 }}
+              >
                 <Button
                   variant="outline"
+                  className="px-6 h-11 border-2 hover:bg-muted transition-colors"
                   onClick={() => {
                     setShowAddWordModal(false);
                     setNewEntry({
@@ -1059,14 +1093,20 @@ export function VocabularyTable({
                   Cancel
                 </Button>
                 <Button
-                  className="h-8 w-20 whitespace-nowrap text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                  className="h-11 px-6 font-semibold text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50"
                   onClick={handleAiFill}
-                  disabled={isAiLoading}
+                  disabled={isAiLoading || !newEntry.word.trim()}
                 >
                   {isAiLoading ? (
-                    <Sparkles className="h-4 w-4 animate-pulse" />
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 animate-pulse" />
+                      <span>Analyzing...</span>
+                    </div>
                   ) : (
-                    'AI Save'
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      <span>AI Save</span>
+                    </div>
                   )}
                 </Button>
               </div>
