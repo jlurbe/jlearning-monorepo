@@ -134,6 +134,7 @@ export function VocabularyTable({
   const [editValue, setEditValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const tableRef = useRef<HTMLTableElement>(null);
+  const addWordInputRef = useRef<HTMLInputElement>(null);
 
   // Sorting state
   const [sortBy, setSortBy] = useState<string | null>(null);
@@ -148,6 +149,11 @@ export function VocabularyTable({
       // Add classes to prevent scrolling and remove margins
       document.body.classList.add('modal-open');
       document.documentElement.classList.add('modal-open');
+      // Focus the input once the modal is visible
+      // Defer to next frame to ensure the input is mounted
+      requestAnimationFrame(() => {
+        addWordInputRef.current?.focus();
+      });
     } else {
       // Remove the classes
       document.body.classList.remove('modal-open');
@@ -1053,6 +1059,7 @@ export function VocabularyTable({
                   Word or Sentence
                 </label>
                 <Input
+                  ref={addWordInputRef}
                   value={newEntry.word}
                   onChange={(e) =>
                     setNewEntry({ ...newEntry, word: e.target.value })

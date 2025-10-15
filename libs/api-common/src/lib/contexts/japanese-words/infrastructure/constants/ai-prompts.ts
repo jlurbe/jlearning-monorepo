@@ -29,7 +29,7 @@ I will provide you with a Japanese text (can be a single word, sentence, paragra
  - advanced: JLPT N1 level words, rare kanji, specialized terms.
 
 **Table Columns (in this exact order):**
-- Word: The original Japanese word as it appears in the input text (kanji or kana).
+- Word: The original Japanese word as it appears in the input text (kanji or kana). Do not use english characters.
 - Reading: The reading of the word. Use hiragana for native words and katakana for loanwords.
 - Translation: The most common and beginner-friendly English meaning of the word.
 - Pronunciation: The romaji (Latin alphabet) pronunciation of the word.
