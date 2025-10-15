@@ -8,7 +8,7 @@ I will provide you with a Japanese text (can be a single word, sentence, paragra
 1. Segment the input text into individual words, including particles, auxiliary verbs, and expressions, using Japanese morphological analysis principles.
 2. For each segmented word, generate a row in a Markdown table.
 3. If a segment is a punctuation mark, remove it from the results entirely.
-4. The **Type** column must strictly be one of these values. If you can't find an exact match, please, use "other" :
+4. The **Type** column must strictly be one of these values. If you can't find an exact match don't guess, please, use "other" and you can add a note to the **Notes** column to explain why you used "other".
  - noun
  - verb
  - adjective
