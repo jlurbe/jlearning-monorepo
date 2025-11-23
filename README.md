@@ -71,6 +71,16 @@ nx serve jlearning-front
 
 The frontend application will be available at `http://localhost:4200`.
 
+### Convenience Scripts
+
+The root `package.json` includes several shortcut scripts for common tasks:
+
+- **`npm run start:dev`**: Runs both backend and frontend in development mode (no TUI).
+- **`npm run db:generate`**: Generates database migrations based on schema changes.
+- **`npm run db:migrate`**: Applies pending migrations to the database.
+- **`npm run db:studio`**: Opens Drizzle Studio to view and manage your database content.
+- **`npm run db:push`**: Pushes schema changes directly to the database (useful for rapid prototyping).
+
 ## 🗄️ Database Configuration
 
 This project uses **Drizzle ORM** with **Turso** (LibSQL) as the primary database solution:
@@ -137,6 +147,10 @@ To execute the unit tests for a specific project:
 
 - **Backend:** `nx test jlearning-api`
 - **Frontend:** `nx test jlearning-front`
+
+## 📚 Documentation
+
+- [**Animations Guide**](./ANIMATIONS.md): Detailed documentation of all animations used in the application.
 
 ## 💡 Useful Nx Commands
 
