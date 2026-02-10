@@ -58,7 +58,7 @@ Or, run each individually:
 #### Running the Backend API
 
 ```sh
-nx serve jlearning-api
+nx serve jlearning-api --no-tui
 ```
 
 The API will be available at `http://localhost:3000`.
