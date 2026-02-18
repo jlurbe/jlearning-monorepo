@@ -1,8 +1,20 @@
 @baseUrl = http://localhost:3000/api
+@authToken = {{login.response.body.access_token}}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
 
 ### Create a new Japanese word with example sentences
 POST {{baseUrl}}/japanese-words
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "word": "日本語",
@@ -18,15 +30,18 @@ Content-Type: application/json
 
 ### Get all Japanese words
 GET {{baseUrl}}/japanese-words
+Authorization: Bearer {{authToken}}
 
 ### Get a single Japanese word by ID
 # @prompt wordId
 GET {{baseUrl}}/japanese-words/{{wordId}}
+Authorization: Bearer {{authToken}}
 
 ### Update a Japanese word
 # @prompt wordId
 PATCH {{baseUrl}}/japanese-words/{{wordId}}
 Content-Type: application/json
+Authorization: Bearer {{authToken}}
 
 {
   "status": "mastered",
@@ -36,3 +51,4 @@ Content-Type: application/json
 ### Delete a Japanese word
 # @prompt wordId
 DELETE {{baseUrl}}/japanese-words/{{wordId}}
+Authorization: Bearer {{authToken}}
